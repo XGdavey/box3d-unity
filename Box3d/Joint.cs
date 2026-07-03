@@ -20,6 +20,7 @@ namespace Box3d
 
         public void Destroy(bool wakeAttached = true)
         {
+            if (Id.IsNull) return; // double-destroy would pass a null id into unvalidated native paths
             UnsafeBindings.b3DestroyJoint(Id, wakeAttached);
             Id = default;
         }

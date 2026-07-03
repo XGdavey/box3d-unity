@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 
 namespace Box3d
 {
@@ -12,18 +13,27 @@ namespace Box3d
         {
             WorldDef local = def;
             // Debug-shape callbacks must be set at world creation for DrawDebug to render shape
-            // interiors. Wire the bridge unless the user supplied their own.
-            if (local.CreateDebugShape == IntPtr.Zero)
+            // interiors. Wire the bridge unless the user supplied their own pair.
+            bool bridgeOwnsDebugShapes = local.CreateDebugShape == IntPtr.Zero && local.DestroyDebugShape == IntPtr.Zero;
+            if (bridgeOwnsDebugShapes)
             {
                 local.CreateDebugShape = DebugDrawBridge.CreateShapePtr;
                 local.DestroyDebugShape = DebugDrawBridge.DestroyShapePtr;
             }
-            return new World { Id = UnsafeBindings.b3CreateWorld(&local) };
+            else if (local.CreateDebugShape == IntPtr.Zero || local.DestroyDebugShape == IntPtr.Zero)
+            {
+                Debug.LogWarning("[Box3d] WorldDef sets only one of CreateDebugShape/DestroyDebugShape — " +
+                                 "the native engine requires both; expect crashes when shapes are drawn/destroyed.");
+            }
+            var world = new World { Id = UnsafeBindings.b3CreateWorld(&local) };
+            DebugDrawBridge.SetBridgeOwned(world.Id, bridgeOwnsDebugShapes);
+            return world;
         }
 
         /// <summary>Destroys the world and everything in it. All body/shape/joint ids become stale.</summary>
         public void Destroy()
         {
+            if (Id.IsNull) return; // double-destroy would pass a null id into unvalidated native paths
             ClearCallbackSlots();
             UnsafeBindings.b3DestroyWorld(Id);
             Id = default;

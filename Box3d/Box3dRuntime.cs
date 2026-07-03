@@ -10,7 +10,10 @@ namespace Box3d
     /// code (tests, tools) if needed.</summary>
     public static class Box3dRuntime
     {
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         private delegate void LogDelegate(IntPtr message);
+
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         private delegate int AssertDelegate(IntPtr condition, IntPtr fileName, int lineNumber);
 
         // Keep delegates rooted for the lifetime of the process — the native side stores the

@@ -12,6 +12,7 @@ namespace Box3d
 
         public void Destroy()
         {
+            if (Id.IsNull) return; // double-destroy would pass a null id into unvalidated native paths
             UnsafeBindings.b3DestroyBody(Id);
             Id = default;
         }
@@ -85,6 +86,7 @@ namespace Box3d
         /// <see cref="Hull"/> may be destroyed after this call.</summary>
         public unsafe Shape CreateHullShape(in ShapeDef def, Hull hull)
         {
+            if (!hull.IsCreated) throw new ArgumentException("Hull is not created (default or already destroyed)", nameof(hull));
             ShapeDef localDef = def;
             return new Shape { Id = UnsafeBindings.b3CreateHullShape(Id, &localDef, (HullData*)hull.Data) };
         }
@@ -93,6 +95,7 @@ namespace Box3d
         /// REFERENCED — the <see cref="TriangleMesh"/> must outlive this shape.</summary>
         public unsafe Shape CreateMeshShape(in ShapeDef def, TriangleMesh mesh, float3 scale)
         {
+            if (!mesh.IsCreated) throw new ArgumentException("TriangleMesh is not created (default or already destroyed)", nameof(mesh));
             ShapeDef localDef = def;
             return new Shape { Id = UnsafeBindings.b3CreateMeshShape(Id, &localDef, (b3MeshData*)mesh.Data, scale) };
         }
@@ -106,6 +109,7 @@ namespace Box3d
         /// the <see cref="HeightField"/> must outlive this shape.</summary>
         public unsafe Shape CreateHeightFieldShape(in ShapeDef def, HeightField heightField)
         {
+            if (!heightField.IsCreated) throw new ArgumentException("HeightField is not created (default or already destroyed)", nameof(heightField));
             ShapeDef localDef = def;
             return new Shape { Id = UnsafeBindings.b3CreateHeightFieldShape(Id, &localDef, (b3HeightFieldData*)heightField.Data) };
         }
@@ -114,6 +118,7 @@ namespace Box3d
         /// the <see cref="Compound"/> must outlive this shape.</summary>
         public unsafe Shape CreateCompoundShape(in ShapeDef def, Compound compound)
         {
+            if (!compound.IsCreated) throw new ArgumentException("Compound is not created (default or already destroyed)", nameof(compound));
             ShapeDef localDef = def;
             return new Shape { Id = UnsafeBindings.b3CreateCompoundShape(Id, &localDef, (b3CompoundData*)compound.Data) };
         }

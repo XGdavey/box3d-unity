@@ -22,6 +22,7 @@ namespace Box3d
         /// <summary>Builds a convex hull enclosing the given points (at most maxVertices kept).</summary>
         public static unsafe Hull Create(ReadOnlySpan<float3> points, int maxVertices = 64)
         {
+            if (points.Length < 4) throw new ArgumentException("a hull needs at least 4 points", nameof(points));
             fixed (float3* p = points)
             {
                 return new Hull { Data = (IntPtr)UnsafeBindings.b3CreateHull(p, points.Length, maxVertices) };
@@ -63,6 +64,9 @@ namespace Box3d
         public static unsafe TriangleMesh Create(ReadOnlySpan<float3> vertices, ReadOnlySpan<int> triangles,
             bool identifyEdges = true, bool weldVertices = false, float weldTolerance = 0.005f)
         {
+            if (vertices.Length < 3) throw new ArgumentException("a mesh needs at least 3 vertices", nameof(vertices));
+            if (triangles.Length < 3 || triangles.Length % 3 != 0)
+                throw new ArgumentException("indices must be a non-empty multiple of 3", nameof(triangles));
             fixed (float3* v = vertices)
             fixed (int* i = triangles)
             {
@@ -114,6 +118,8 @@ namespace Box3d
         public static unsafe HeightField Create(ReadOnlySpan<float> heights, int countX, int countZ,
             float3 scale, float globalMinimumHeight, float globalMaximumHeight, bool clockwiseWinding = false)
         {
+            if (countX < 2 || countZ < 2 || heights.Length != countX * countZ)
+                throw new ArgumentException("heights must contain exactly countX*countZ values (each count >= 2)", nameof(heights));
             fixed (float* h = heights)
             {
                 var def = new b3HeightFieldDef
@@ -180,6 +186,13 @@ namespace Box3d
             ReadOnlySpan<CompoundCapsuleInstance> capsules = default,
             ReadOnlySpan<CompoundHullInstance> hulls = default)
         {
+            if (spheres.Length + capsules.Length + hulls.Length == 0)
+                throw new ArgumentException("a compound needs at least one instance");
+            for (int i = 0; i < hulls.Length; i++)
+            {
+                if (!hulls[i].Hull.IsCreated)
+                    throw new ArgumentException($"hull instance {i} is not created", nameof(hulls));
+            }
             fixed (CompoundSphereInstance* s = spheres)
             fixed (CompoundCapsuleInstance* c = capsules)
             fixed (CompoundHullInstance* h = hulls)

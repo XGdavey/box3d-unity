@@ -77,6 +77,7 @@ namespace Box3d
         public unsafe int OverlapShape(float3 origin, ReadOnlySpan<float3> proxyPoints, float proxyRadius,
             QueryFilter filter, Span<ShapeId> results)
         {
+            if (proxyPoints.IsEmpty) throw new ArgumentException("proxy needs at least one point", nameof(proxyPoints));
             fixed (float3* points = proxyPoints)
             fixed (ShapeId* buffer = results)
             {
@@ -104,6 +105,7 @@ namespace Box3d
         public unsafe int CastShape(float3 origin, ReadOnlySpan<float3> proxyPoints, float proxyRadius,
             float3 translation, QueryFilter filter, Span<RayHit> hits)
         {
+            if (proxyPoints.IsEmpty) throw new ArgumentException("proxy needs at least one point", nameof(proxyPoints));
             fixed (float3* points = proxyPoints)
             fixed (RayHit* buffer = hits)
             {
