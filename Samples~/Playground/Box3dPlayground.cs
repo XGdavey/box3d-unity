@@ -1,3 +1,4 @@
+#if ENABLE_INPUT_SYSTEM
 using System;
 using System.Collections.Generic;
 using Box3d;
@@ -511,3 +512,15 @@ public class Box3dPlayground : MonoBehaviour
         if (_world.IsValid) _world.Destroy();
     }
 }
+#else
+using UnityEngine;
+
+/// <summary>Inert stub — this sample requires the Input System package (com.unity.inputsystem).</summary>
+public class Box3dPlayground : MonoBehaviour
+{
+    private void Start()
+    {
+        Debug.LogWarning("Box3dPlayground requires the Input System package (com.unity.inputsystem).");
+    }
+}
+#endif

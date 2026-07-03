@@ -1,3 +1,4 @@
+#if ENABLE_INPUT_SYSTEM
 using System;
 using Box3d;
 using Unity.Mathematics;
@@ -149,3 +150,15 @@ public class Box3dDragSandbox : MonoBehaviour
         if (_world.IsValid) _world.Destroy();
     }
 }
+#else
+using UnityEngine;
+
+/// <summary>Inert stub — this sample requires the Input System package (com.unity.inputsystem).</summary>
+public class Box3dDragSandbox : MonoBehaviour
+{
+    private void Start()
+    {
+        Debug.LogWarning("Box3dDragSandbox requires the Input System package (com.unity.inputsystem).");
+    }
+}
+#endif

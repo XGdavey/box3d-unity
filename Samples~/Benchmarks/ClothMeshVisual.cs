@@ -39,7 +39,7 @@ public class ClothMeshVisual
         visual.AddComponent<MeshFilter>().sharedMesh = _mesh;
         MeshRenderer renderer = visual.AddComponent<MeshRenderer>();
 
-        var material = new Material(Shader.Find("Universal Render Pipeline/Lit"))
+        var material = new Material(FindLitShader())
         {
             color = new Color(0.85f, 0.3f, 0.25f),
         };
@@ -58,5 +58,14 @@ public class ClothMeshVisual
         _mesh.vertices = _vertices;
         _mesh.RecalculateNormals();
         _mesh.RecalculateBounds();
+    }
+
+    private static Shader FindLitShader()
+    {
+        // URP first (the dev project's pipeline); fall back for Built-in RP consumers.
+        Shader shader = Shader.Find("Universal Render Pipeline/Lit");
+        if (!shader) shader = Shader.Find("Standard");
+        if (!shader) shader = Shader.Find("Sprites/Default");
+        return shader;
     }
 }

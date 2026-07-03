@@ -59,10 +59,19 @@ public static class VehicleTerrain
         var visual = new GameObject("Terrain");
         visual.AddComponent<MeshFilter>().sharedMesh = mesh;
         MeshRenderer renderer = visual.AddComponent<MeshRenderer>();
-        renderer.material = new Material(Shader.Find("Universal Render Pipeline/Lit"))
+        renderer.material = new Material(FindLitShader())
         {
             color = new Color(0.45f, 0.55f, 0.35f),
         };
         return mesh;
+    }
+
+    private static Shader FindLitShader()
+    {
+        // URP first (the dev project's pipeline); fall back for Built-in RP consumers.
+        Shader shader = Shader.Find("Universal Render Pipeline/Lit");
+        if (!shader) shader = Shader.Find("Standard");
+        if (!shader) shader = Shader.Find("Sprites/Default");
+        return shader;
     }
 }
