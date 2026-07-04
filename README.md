@@ -39,6 +39,8 @@ This project was inspired by, and owes its architecture to, two projects:
   (with clear worker-thread safety rules).
 - **Extras** — explosions, wind, conveyor surface materials, debug-draw bridge to the Scene view.
 - **Multithreading** — box3d's internal scheduler, configurable worker count per world.
+- **Component layer (experimental)** — author bodies and shapes in the Inspector, mirroring
+  Unity's Rigidbody/Collider model (see the docs).
 
 ## Performance
 
@@ -106,6 +108,7 @@ ones require the Input System package.
 ## Documentation
 
 - [Getting started](Documentation~/getting-started.md)
+- [Component layer (experimental)](Documentation~/components.md) — author physics in the Inspector
 - [Core concepts](Documentation~/concepts.md) — ids, defs, lifetimes, the rules that matter
 - [Shapes & geometry](Documentation~/shapes-and-geometry.md)
 - [Joints](Documentation~/joints.md)

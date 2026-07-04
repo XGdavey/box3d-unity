@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.2.0] — 2026-07-04
+
+### Added
+- **Experimental component layer** (`Box3d.Hybrid`): author physics in the Inspector with
+  `Box3dWorld`, `Box3dBody`, `Box3dSphereShape`, and `Box3dBoxShape`, mirroring Unity's
+  Rigidbody/Collider model — static/kinematic/dynamic bodies, enable/disable, live type and
+  material edits, runtime `Position`/`Rotation`. Sphere and box shapes only for now.
+- WebGL native binary (static wasm), joining Windows, Linux, and Android.
+- Components sample scene + documentation.
+
+### Fixed
+- Native-safety guards (double-destroy, geometry argument checks, debug-draw exception barriers).
+- Magenta materials in player builds; Linux editor plugin; non-URP / missing-Input-System sample imports.
+
+### Changed
+- API consistency: equality operators and `IsValid` on all wrappers; `Body.AngularVelocity`.
+
 ## [0.1.0] — 2026-07-03
 
 First public release. Wraps Box3d v0.1.0 (commit 29bf523).
