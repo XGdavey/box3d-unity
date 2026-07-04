@@ -38,14 +38,30 @@ namespace Box3d.Hybrid
             if (_shape.IsValid) _shape.SetRestitution(value);
         }
 
-        /// <summary>A shape definition seeded from this component's material fields.</summary>
+        /// <summary>A shape definition seeded from this component's material fields and the
+        /// GameObject's Unity collision layer (so Project Settings → Physics → Layer Collision
+        /// Matrix is honored).</summary>
         protected ShapeDef BuildDef()
         {
             ShapeDef def = ShapeDef.Default;
             def.Density = Density;
             def.BaseMaterial.Friction = Friction;
             def.BaseMaterial.Restitution = Restitution;
+            def.Filter.CategoryBits = 1UL << gameObject.layer;
+            def.Filter.MaskBits = CollisionMaskForLayer(gameObject.layer);
             return def;
+        }
+
+        // Builds a box3d mask from Unity's layer collision matrix: bit L is set for every layer
+        // this layer is allowed to collide with.
+        private static ulong CollisionMaskForLayer(int layer)
+        {
+            ulong mask = 0;
+            for (int other = 0; other < 32; other++)
+            {
+                if (!Physics.GetIgnoreLayerCollision(layer, other)) mask |= 1UL << other;
+            }
+            return mask;
         }
 
         internal void AttachTo(Body body, float3 scale)
@@ -56,6 +72,11 @@ namespace Box3d.Hybrid
         /// <summary>Creates the native shape on the given body. <paramref name="scale"/> is the
         /// owning GameObject's lossy scale, to bake into the shape dimensions.</summary>
         protected abstract Shape CreateShape(Body body, float3 scale);
+
+        /// <summary>Frees any native geometry this shape owns. Called by the body AFTER the body
+        /// (and its shapes) are destroyed, so referenced mesh/heightfield data outlives its shape.
+        /// Default: nothing (spheres/boxes/hulls are self-contained or cloned).</summary>
+        internal virtual void ReleaseGeometry() { }
 
 #if UNITY_EDITOR
         private void OnValidate()

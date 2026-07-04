@@ -36,6 +36,7 @@ namespace Box3d.Hybrid
 
         private Box3dWorld _world;
         private Body _body;
+        private Box3dShape[] _shapes;
         // A handle to this component lives in the native body's userData, so a body-move event
         // dereferences straight back here — no managed-side lookup list.
         private GCHandle _handle;
@@ -95,7 +96,8 @@ namespace Box3d.Hybrid
             _body = _world.World.CreateBody(def);
 
             float3 scale = transform.lossyScale;
-            foreach (Box3dShape shape in GetComponents<Box3dShape>())
+            _shapes = GetComponents<Box3dShape>();
+            foreach (Box3dShape shape in _shapes)
             {
                 shape.AttachTo(_body, scale);
             }
@@ -121,6 +123,14 @@ namespace Box3d.Hybrid
         {
             if (Type == Box3dBodyType.Kinematic && _world) _world.RemoveKinematic(this);
             if (_body.IsValid) _body.Destroy();
+            // Free referenced geometry (meshes) only after the body — and its shapes — are gone.
+            if (_shapes != null)
+            {
+                foreach (Box3dShape shape in _shapes)
+                {
+                    if (shape) shape.ReleaseGeometry();
+                }
+            }
             if (_handle.IsAllocated) _handle.Free();
         }
 
