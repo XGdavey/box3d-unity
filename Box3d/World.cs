@@ -12,6 +12,9 @@ namespace Box3d
         public static unsafe World Create(in WorldDef def)
         {
             WorldDef local = def;
+#if UNITY_WEBGL && !UNITY_EDITOR
+            local.WorkerCount = 1; // WebGL players are single-threaded
+#endif
             // Debug-shape callbacks must be set at world creation for DrawDebug to render shape
             // interiors. Wire the bridge unless the user supplied their own pair.
             bool bridgeOwnsDebugShapes = local.CreateDebugShape == IntPtr.Zero && local.DestroyDebugShape == IntPtr.Zero;

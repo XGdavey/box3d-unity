@@ -7,6 +7,8 @@ simulation, and excellent multithreaded performance.
 
 ![Playground](https://projects.cdn.aapanasik.com/box3d-unity/unity-box3d.gif)
 
+**[▶ Try the live WebGL demo](https://suvitruf.github.io/box3d-unity/)**
+
 This project was inspired by, and owes its architecture to, two projects:
 
 - **[Box3d](https://github.com/erincatto/box3d)** by Erin Catto — the engine itself. This package
@@ -60,9 +62,9 @@ Install via the Unity Package Manager using the git URL (an OpenUPM listing will
 https://github.com/Suvitruf/box3d-unity.git
 ```
 
-Requires **Unity 6000.0+**. Native binaries are included for **Windows x64**, **Linux x64**, and
-**Android arm64**; macOS/iOS build scripts are provided but binaries are not shipped yet
-(see `Documentation~/building-natives.md`).
+Requires **Unity 6000.0+**. Native binaries are included for **Windows x64**, **Linux x64**,
+**Android arm64**, and **WebGL**; macOS/iOS build scripts are provided but binaries are not
+shipped yet (see `Documentation~/building-natives.md`).
 
 ## Quick start
 

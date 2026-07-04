@@ -21,8 +21,10 @@ namespace Box3d.Tests
         [Test]
         public void ExternCount_MatchesGeneratedSurface()
         {
-            // 580 native exports minus 2 duplicate header declarations. Update when box3d is bumped.
-            Assert.AreEqual(578, Externs.Length);
+            // 580 native declarations minus 2 duplicate header declarations minus b3InternalAssert
+            // (debug-only symbol, absent from Release binaries — WebGL linking requires every extern
+            // to exist). Update when box3d is bumped.
+            Assert.AreEqual(577, Externs.Length);
         }
 
         [Test]

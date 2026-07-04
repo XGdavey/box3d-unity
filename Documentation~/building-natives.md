@@ -13,6 +13,7 @@ from different Box3d commits.
 | Windows x64 | `Plugins/Windows/x86_64/box3d.dll` | `build_windows.bat` (VS 2022 Build Tools) | shipped |
 | Linux x64 | `Plugins/Linux/x86_64/libbox3d.so` | `build_linux.sh` (gcc + cmake) | shipped |
 | Android arm64-v8a | `Plugins/Android/arm64-v8a/libbox3d.so` | `build_android.bat` (Windows, Unity's bundled NDK) or `build_android.sh` (Linux/macOS host) | shipped |
+| WebGL (wasm static) | `Plugins/WebGL/libbox3d.a` | `build_webgl.sh` (emsdk matching Unity's Emscripten) | shipped |
 | macOS universal | `Plugins/macOS/libbox3d.dylib` | `build_macos.sh` (Xcode) | script ready, binary pending |
 | iOS arm64 (static) | `Plugins/iOS/libbox3d.a` | `build_ios.sh` (Xcode) | script ready, binary pending |
 
@@ -31,6 +32,14 @@ resolved automatically where possible and overridable via environment variables:
 Every script configures CMake with `BUILD_SHARED_LIBS=ON` (static for iOS), builds Release, and
 copies the result into `Plugins/`. If a script can't find something it exits with a message naming
 the variable to set.
+
+## WebGL specifics
+
+WebGL links plugins statically and runs single-threaded: the C# imports switch to `__Internal`
+automatically, and the wrapper forces `WorkerCount = 1` on WebGL players. The Emscripten version
+used to build `libbox3d.a` must match the Unity editor's WebGL toolchain (check
+`PlaybackEngines/WebGLSupport/BuildTools/Emscripten/.../emscripten-version.txt`); the shipped
+archive was built with 3.1.39 for Unity 6000.0.
 
 ## iOS specifics
 

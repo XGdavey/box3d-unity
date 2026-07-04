@@ -1727,8 +1727,6 @@ namespace Box3d
         [DllImport(Box3dLibrary.Name, CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
         public static extern void b3SetAssertFcn([NativeTypeName("b3AssertFcn *")] IntPtr assertFcn);
 
-        [DllImport(Box3dLibrary.Name, CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
-        public static extern int b3InternalAssert([NativeTypeName("const char *")] sbyte* condition, [NativeTypeName("const char *")] sbyte* fileName, int lineNumber);
 
         [DllImport(Box3dLibrary.Name, CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
         public static extern void b3SetLogFcn([NativeTypeName("b3LogFcn *")] IntPtr logFcn);
@@ -2298,11 +2296,11 @@ namespace Box3d
         public static extern void b3RecPlayer_SetWorkerCount(b3RecPlayer* player, int count);
 
         [DllImport(Box3dLibrary.Name, CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
-        public static extern void b3RecPlayer_SetKeyframePolicy(b3RecPlayer* player, [NativeTypeName("size_t")] ulong budgetBytes, int minIntervalFrames);
+        public static extern void b3RecPlayer_SetKeyframePolicy(b3RecPlayer* player, [NativeTypeName("size_t")] UIntPtr budgetBytes, int minIntervalFrames);
 
         [DllImport(Box3dLibrary.Name, CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
         [return: NativeTypeName("size_t")]
-        public static extern ulong b3RecPlayer_GetKeyframeBudget([NativeTypeName("const b3RecPlayer *")] b3RecPlayer* player);
+        public static extern UIntPtr b3RecPlayer_GetKeyframeBudget([NativeTypeName("const b3RecPlayer *")] b3RecPlayer* player);
 
         [DllImport(Box3dLibrary.Name, CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
         public static extern int b3RecPlayer_GetKeyframeMinInterval([NativeTypeName("const b3RecPlayer *")] b3RecPlayer* player);
@@ -2312,7 +2310,7 @@ namespace Box3d
 
         [DllImport(Box3dLibrary.Name, CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
         [return: NativeTypeName("size_t")]
-        public static extern ulong b3RecPlayer_GetKeyframeBytes([NativeTypeName("const b3RecPlayer *")] b3RecPlayer* player);
+        public static extern UIntPtr b3RecPlayer_GetKeyframeBytes([NativeTypeName("const b3RecPlayer *")] b3RecPlayer* player);
 
         [DllImport(Box3dLibrary.Name, CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
         public static extern int b3RecPlayer_GetBodyCount([NativeTypeName("const b3RecPlayer *")] b3RecPlayer* player);
