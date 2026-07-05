@@ -68,6 +68,46 @@ namespace Box3d.Hybrid.Editor
         }
     }
 
+    /// <summary>Scene-view editing for the capsule shape: drag radius and height. Radius scales by
+    /// the perpendicular axes and height by the capsule axis, matching the physics shape.</summary>
+    [CustomEditor(typeof(Box3dCapsuleShape))]
+    public class Box3dCapsuleShapeEditor : UnityEditor.Editor
+    {
+        private readonly CapsuleBoundsHandle _handle = new CapsuleBoundsHandle();
+
+        private void OnSceneGUI()
+        {
+            Transform t = ((Box3dCapsuleShape)target).transform;
+            SerializedProperty radius = serializedObject.FindProperty("Radius");
+            SerializedProperty height = serializedObject.FindProperty("Height");
+            SerializedProperty center = serializedObject.FindProperty("Center");
+            int direction = serializedObject.FindProperty("Direction").enumValueIndex; // 0=X, 1=Y, 2=Z
+
+            Vector3 absScale = ShapeHandleMath.Abs(t.lossyScale);
+            float axisScale = Mathf.Max(0.0001f, absScale[direction]);
+            float radialScale = Mathf.Max(0.0001f, ShapeHandleMath.MaxExcept(absScale, direction));
+
+            _handle.heightAxis = (CapsuleBoundsHandle.HeightAxis)direction;
+            using (new Handles.DrawingScope(Matrix4x4.TRS(t.position, t.rotation, Vector3.one)))
+            {
+                _handle.center = Vector3.Scale(center.vector3Value, t.lossyScale);
+                _handle.radius = radius.floatValue * radialScale;
+                _handle.height = height.floatValue * axisScale;
+
+                EditorGUI.BeginChangeCheck();
+                _handle.DrawHandle();
+                if (EditorGUI.EndChangeCheck())
+                {
+                    Undo.RecordObject(target, "Edit Capsule Shape");
+                    radius.floatValue = _handle.radius / radialScale;
+                    height.floatValue = _handle.height / axisScale;
+                    center.vector3Value = ShapeHandleMath.Unscale(_handle.center, t.lossyScale);
+                    serializedObject.ApplyModifiedProperties();
+                }
+            }
+        }
+    }
+
     internal static class ShapeHandleMath
     {
         public static float MaxAbs(Vector3 v)
@@ -78,6 +118,17 @@ namespace Box3d.Hybrid.Editor
         public static Vector3 Abs(Vector3 v)
         {
             return new Vector3(Mathf.Abs(v.x), Mathf.Abs(v.y), Mathf.Abs(v.z));
+        }
+
+        // The largest component of v excluding the given axis index.
+        public static float MaxExcept(Vector3 v, int axis)
+        {
+            float max = 0f;
+            for (int i = 0; i < 3; i++)
+            {
+                if (i != axis) max = Mathf.Max(max, v[i]);
+            }
+            return max;
         }
 
         // Divides component-wise, treating a zero scale as 1 to avoid NaN.
