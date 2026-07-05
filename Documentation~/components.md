@@ -3,8 +3,8 @@
 > **Experimental (0.2.x).** A MonoBehaviour layer that lets you author physics in the Inspector
 > instead of writing C#, mirroring Unity's Rigidbody/Collider model. It covers bodies, all five
 > shape types (sphere, box, capsule, hull, mesh), compound (child) shapes, and auto-static
-> colliders; joint components are not wired up yet. The pointer-level API in the rest of these docs
-> remains the full-featured path. Lives in a separate `Box3d.Hybrid` assembly.
+> colliders, and two joint components (hinge, fixed) so far. The pointer-level API in the rest of
+> these docs remains the full-featured path. Lives in a separate `Box3d.Hybrid` assembly.
 
 If you know Unity's physics components, you already know these:
 
@@ -94,11 +94,26 @@ child shape is placed at its Transform relative to the body. And a shape with **
 itself or an ancestor gets its own static body automatically (a collider without a rigidbody is
 static geometry).
 
+## Joints
+
+Add a joint component to a GameObject that has a `Box3dBody`; it constrains that body to a
+**Connected Body** (or to the world, if left null — like Unity's null connectedBody). The **Anchor**
+is the local pivot point.
+
+| Component | Unity analog | Notes |
+|---|---|---|
+| `Box3dHingeJoint` | `HingeJoint` | Rotates around **Axis** through the anchor; optional angle limits + motor. |
+| `Box3dFixedJoint` | `FixedJoint` | Rigidly welds the two bodies at their current pose; optional spring softness. |
+
+Frames are computed so the joint is satisfied at the pose you built it in — creating it never snaps
+the bodies. The other seven box3d joint types (distance, spherical, prismatic, wheel, …) are
+available through the code API and will get components later.
+
 ## Current limits
 
 - Mesh shapes are static-only (use a hull shape for dynamic concave-ish objects). Hull and mesh
   shapes read mesh vertices at runtime, so the mesh asset must have **Read/Write enabled**.
-- No joint components yet — use the code API for joints.
+- Only hinge and fixed joints have components so far; the rest are code-API only.
 
 For anything beyond this, drop to the code API ([getting started](getting-started.md)) — the
 components and the API share the same world and interoperate (`Box3dBody.Body`, `Box3dWorld.World`).

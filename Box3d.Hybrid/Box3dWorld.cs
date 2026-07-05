@@ -29,10 +29,26 @@ namespace Box3d.Hybrid
         private readonly List<Box3dBody> _kinematicBodies = new List<Box3dBody>();
 
         private World _world;
+        private Body _anchor;
         private static Box3dWorld _instance;
 
         /// <summary>The underlying Box3d world (valid after this component is enabled).</summary>
         public World World => _world;
+
+        /// <summary>A shared static body at the origin, used as the fixed endpoint for joints whose
+        /// connected body is null (like Unity's null connectedBody = attach to the world).</summary>
+        public Body WorldAnchor
+        {
+            get
+            {
+                if (!_anchor.IsValid)
+                {
+                    EnsureCreated();
+                    _anchor = _world.CreateBody(BodyDef.Default); // static at origin
+                }
+                return _anchor;
+            }
+        }
 
         /// <summary>The active world component, creating one if the scene has none.</summary>
         public static Box3dWorld Instance
