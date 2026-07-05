@@ -1,10 +1,11 @@
 # Component layer (experimental)
 
-> **Experimental (0.2.x).** A MonoBehaviour layer that lets you author physics in the Inspector
-> instead of writing C#, mirroring Unity's Rigidbody/Collider model. It covers bodies, all five
-> shape types (sphere, box, capsule, hull, mesh), compound (child) shapes, and auto-static
-> colliders, and seven joint components. The pointer-level API in the rest of these docs remains
-> the full-featured path. Lives in a separate `Box3d.Hybrid` assembly.
+> **Young but feature-complete (0.3.x).** A MonoBehaviour layer that lets you author physics in the
+> Inspector instead of writing C#, mirroring Unity's Rigidbody/Collider model: bodies, all five
+> shape types (sphere, box, capsule, hull, mesh), compound (child) shapes, auto-static colliders,
+> seven joint components, and full inspector/gizmo/handle editing. The API is still settling, so
+> expect some churn. The pointer-level API in the rest of these docs remains the full-featured
+> path. Lives in a separate `Box3d.Hybrid` assembly.
 
 If you know Unity's physics components, you already know these:
 

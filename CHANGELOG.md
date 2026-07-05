@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.3.0] — 2026-07-05
+
+### Added — component layer (author physics in the Inspector)
+- **Bodies & shapes**: `Box3dWorld`, `Box3dBody` (static/kinematic/dynamic, enable-disable, live
+  type/material edits), and all five shape types — sphere, box, capsule, convex hull, triangle mesh.
+- **Compound & static colliders**: bodies gather child shapes into one compound body; a shape with
+  no body becomes static automatically.
+- **Collision layers**: shapes honor the GameObject layer and Unity's Layer Collision Matrix.
+- **Joints** (seven of nine as components): hinge, ball, slider, distance, fixed, parallel, filter.
+  Motor and wheel remain code-API.
+- **Editor experience**: shape gizmos; draggable Scene-view handles for shape sizes and joint
+  anchors; joint inspectors that hide unused fields; a live body read-out during play; and a
+  mesh Read/Write warning.
+
 ## [0.2.1] — 2026-07-04
 
 ### Added
