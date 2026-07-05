@@ -1,0 +1,13 @@
+{
+    "name": "Box3d.Hybrid.Editor",
+    "rootNamespace": "Box3d.Hybrid.Editor",
+    "references": [
+        "Box3d.Hybrid"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "autoReferenced": true
+}
