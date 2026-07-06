@@ -29,4 +29,11 @@ mkdir -p "$OUT"
 cp "$BUILD"/bin/libbox3d.dylib "$OUT"/libbox3d.dylib 2>/dev/null || cp "$BUILD"/src/libbox3d.dylib "$OUT"/libbox3d.dylib
 lipo -info "$OUT"/libbox3d.dylib
 
-echo "Done: $OUT/libbox3d.dylib"
+# Ad-hoc code signature (identity "-"): no Apple Developer account or certificate needed, and it's
+# what lets the arm64 slice load on Apple Silicon (the kernel refuses to load unsigned arm64 code).
+# For distribution via git/UPM this is sufficient — quarantine (Gatekeeper) only affects browser
+# downloads, and Developer-ID signing + notarization would only matter there.
+codesign --force --sign - "$OUT"/libbox3d.dylib
+codesign --verify --verbose=2 "$OUT"/libbox3d.dylib
+
+echo "Done: $OUT/libbox3d.dylib (ad-hoc signed)"
