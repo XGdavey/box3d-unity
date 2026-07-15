@@ -272,7 +272,7 @@ namespace Box3d.Hybrid
             foreach (BodyMoveEvent moveEvent in _world.GetBodyMoveEvents())
             {
                 if (moveEvent.UserData == IntPtr.Zero) continue;
-                if (GCHandle.FromIntPtr(moveEvent.UserData).Target is Box3dBody body)
+                if (GCHandle.FromIntPtr(moveEvent.UserData).Target is Box3dBody body && body.BodyType == Box3dBodyType.Dynamic)
                 {
                     body.ApplyMoveEvent(moveEvent.Transform);
                 }
