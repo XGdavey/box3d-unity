@@ -12,7 +12,7 @@ namespace Box3d.Hybrid
         [SerializeField, Tooltip("Mesh whose vertices define the convex hull. Must be Read/Write enabled.")]
         private Mesh Mesh;
 
-        [SerializeField, Range(4, 64), Tooltip("Maximum hull vertices kept from the mesh.")]
+        [SerializeField, Min(4), Tooltip("Maximum hull vertices kept from the mesh.")]
         private int MaxVertices = 64;
 
         /// <summary>Sets the source mesh. Must be set before the body creates the shape (Awake).</summary>
