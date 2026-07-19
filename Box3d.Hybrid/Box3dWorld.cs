@@ -285,13 +285,13 @@ namespace Box3d.Hybrid
                 {
                     var a = GetShapeComponent(begin.SensorShapeId); var b = GetShapeComponent(begin.VisitorShapeId);
                     if (!a || !b || !a.enabled || !b.enabled) continue;
-                    foreach (var h in _sensorHandlers) { if (h.SensorShape == a) h.OnBox3dSensorEnter(b); else if (h.SensorShape == b) h.OnBox3dSensorEnter(a); }
+                    for (int hi = 0; hi < _sensorHandlers.Count; hi++) { var h = _sensorHandlers[hi]; if (h.SensorShape == a) h.OnBox3dSensorEnter(b); else if (h.SensorShape == b) h.OnBox3dSensorEnter(a); }
                 }
                 foreach (var end in events.End)
                 {
                     var a = GetShapeComponent(end.SensorShapeId); var b = GetShapeComponent(end.VisitorShapeId);
                     if (!a || !b || !a.enabled || !b.enabled) continue;
-                    foreach (var h in _sensorHandlers) { if (h.SensorShape == a) h.OnBox3dSensorExit(b); else if (h.SensorShape == b) h.OnBox3dSensorExit(a); }
+                    for (int hi = 0; hi < _sensorHandlers.Count; hi++) { var h = _sensorHandlers[hi]; if (h.SensorShape == a) h.OnBox3dSensorExit(b); else if (h.SensorShape == b) h.OnBox3dSensorExit(a); }
                 }
             }
         }
