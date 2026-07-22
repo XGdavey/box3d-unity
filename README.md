@@ -1,6 +1,6 @@
-# Box3d for Unity
+# Box3D for Unity
 
-Unity bindings for [Box3d](https://github.com/erincatto/box3d) — the 3D physics engine by
+Unity bindings for [Box3D](https://github.com/erincatto/box3d) — the 3D physics engine by
 Erin Catto, author of Box2D. The full native C API (~580 functions) is exposed through a
 Unity-friendly C# layer: no pointers in user code, no per-frame allocations, deterministic
 simulation, and excellent multithreaded performance.
@@ -11,12 +11,12 @@ simulation, and excellent multithreaded performance.
 
 This project was inspired by, and owes its architecture to, two projects:
 
-- **[Box3d](https://github.com/erincatto/box3d)** by Erin Catto — the engine itself. This package
+- **[Box3D](https://github.com/erincatto/box3d)** by Erin Catto — the engine itself. This package
   is only a thin, faithful wrapper around it; all the hard physics work is his.
 - **[JoltPhysicsUnity](https://github.com/seep/JoltPhysicsUnity)** inspired the way this wrapper is implemented. Its binding-generation pipeline and packaging decisions shaped
   mine (what I deliberately did differently, is covered in the docs).
 
-> **Status: early (0.3.x).** Box3d itself is a young engine (v0.1) with no API stability
+> **Status: early (0.3.x).** Box3D itself is a young engine (v0.1) with no API stability
 > guarantees yet, and this wrapper tracks it. It is usable and well-tested, but expect breaking
 > changes on engine updates.
 
@@ -40,7 +40,7 @@ This project was inspired by, and owes its architecture to, two projects:
 - **Callbacks** — custom collision filtering, pre-solve contact veto, friction/restitution mixing
   (with clear worker-thread safety rules).
 - **Diagnostics** — debug-draw overlay (shapes, contacts, forces, islands) toggled right on the
-  `Box3dWorld` component; a drop-in stats HUD (step time, per-phase profile, live counts); and
+  `Box3DWorld` component; a drop-in stats HUD (step time, per-phase profile, live counts); and
   `World.GetProfile()` / `GetCounters()` for programmatic profiling.
 - **Determinism & replay** — record a simulation, verify it reproduces bit-identical state (even
   across worker counts), save it, and scrub the replay frame by frame with divergence detection —
@@ -56,7 +56,7 @@ This project was inspired by, and owes its architecture to, two projects:
 Measured against Unity's built-in PhysX with identical seeded scenes (editor, same machine,
 box3d running 4 sub-steps vs PhysX defaults — details and CSVs in the docs):
 
-| Scene | PhysX | Box3d (16 workers) | |
+| Scene | PhysX | Box3D (16 workers) | |
 |---|---|---|---|
 | 10,000 spheres raining | 6.70 ms | **1.84 ms** | ~3.6× faster |
 | Destroyed city, ~10,000 bodies (buildings + props) | 10.94 ms | **7.67 ms** | ~1.4× faster |
@@ -65,14 +65,14 @@ box3d running 4 sub-steps vs PhysX defaults — details and CSVs in the docs):
 
 The city scene is a mixed real-world load — a town of running-bond brick buildings and props on
 terrain, smashed by a scripted sequence of wrecking balls (identical seeded content on both engines).
-There, Box3d's *slowest* step matched PhysX's *median* — tighter frame times through the collapses.
+There, Box3D's *slowest* step matched PhysX's *median* — tighter frame times through the collapses.
 
 A pure-box3d stress test ships too: a [16,290-box pyramid](https://www.youtube.com/watch?v=BtdMbw97Zds),
 one box deep, held upright by contact recycling. It steps in single-digit milliseconds, roughly
 halving once the stack settles to sleep — throw spheres to wake and collapse it, and dial the worker
 thread count to see how box3d's built-in scheduler scales. Ships in the Benchmarks sample.
 
-Box3d's threading scales with the number of independent simulation islands — piles, debris, and
+Box3D's threading scales with the number of independent simulation islands — piles, debris, and
 crowds are its home turf; one giant coupled constraint network is its least favorable shape.
 
 ## Installation
@@ -111,7 +111,7 @@ shipped yet (see `Documentation~/building-natives.md`).
 ## Quick start
 
 ```csharp
-using Box3d;
+using Box3D;
 using Unity.Mathematics;
 using UnityEngine;
 
@@ -165,4 +165,4 @@ ones require the Input System package.
 
 ## License
 
-MIT (see [LICENSE](LICENSE)). Box3d itself is MIT, © Erin Catto.
+MIT (see [LICENSE](LICENSE)). Box3D itself is MIT, © Erin Catto.

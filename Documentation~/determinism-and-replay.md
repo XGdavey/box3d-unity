@@ -21,41 +21,41 @@ replay stands up the same bodies even if you start recording after the world is 
 
 The headline: prove your simulation is reproducible.
 
-- **`Box3dRecorder`** — drop it on a GameObject in a scene with a `Box3dWorld`. It records from the
+- **`Box3DRecorder`** — drop it on a GameObject in a scene with a `Box3DWorld`. It records from the
   start, and after **Record Steps** stops and runs box3d's replay validation, logging
   **`DETERMINISTIC`** or **`DIVERGED`**. A `DIVERGED` result means something in your scene is
   non-deterministic (unseeded randomness, frame-rate-dependent forces) — box3d's own stepping is not.
-  - **Cross-thread test:** set the `Box3dWorld`'s **Worker Count** to 4 and the recorder's **Validate
+  - **Cross-thread test:** set the `Box3DWorld`'s **Worker Count** to 4 and the recorder's **Validate
     Worker Count** to 1 (or vice-versa). Still `DETERMINISTIC` means box3d reproduces identically
     regardless of thread count — the guarantee networked games need.
   - Context menu (⋮): **Stop & Validate**, **Validate Determinism**, **Save Recording**.
 
-> The recorder captures the **component** `Box3dWorld`. If a scene builds physics via the raw API in
+> The recorder captures the **component** `Box3DWorld`. If a scene builds physics via the raw API in
 > its own `World`, the recorder warns that the component world is empty — record that world directly
 > (below) instead.
 
 ## Replay & scrub (record → replay)
 
-- **`Box3dReplayer`** — plays back a `.rec` file (or live capture bytes) in its own replay world,
+- **`Box3DReplayer`** — plays back a `.rec` file (or live capture bytes) in its own replay world,
   debug-drawn. In Play mode the component's Inspector shows a **Timeline**: a frame slider,
   transport buttons (◀ / play-pause / step / restart), and a live **`DIVERGED at frame N`** read-out.
-  It needs no `Box3dWorld` or bodies in the scene — it stands up its own world from the recording.
+  It needs no `Box3DWorld` or bodies in the scene — it stands up its own world from the recording.
 
 Wireframes render in the **Scene view** always, and in the **Game view only with Gizmos** enabled
 (same caveat as debug draw).
 
 ### Visual replay (real objects)
 
-- **`Box3dVisualReplayer`** — plays the recording back on the scene's **actual GameObjects** (meshes,
+- **`Box3DVisualReplayer`** — plays the recording back on the scene's **actual GameObjects** (meshes,
   materials, everything) instead of wireframes. It pauses live physics and drives each recorded body
   onto its scene object, so you watch the recorded run with full visuals and the same scrub timeline.
 
-  Use it in the **same scene the recording was made in**. Mapping is by **body name**: `Box3dBody`
+  Use it in the **same scene the recording was made in**. Mapping is by **body name**: `Box3DBody`
   names its body after the GameObject, so give bodies **unique names** for exact playback (same-named
   bodies are paired best-effort). Bodies with no scene object (e.g. the joint world anchor) are simply
   skipped. It logs how many replay bodies it mapped.
 
-  Pick `Box3dReplayer` (wireframe) when you don't have the original scene; pick `Box3dVisualReplayer`
+  Pick `Box3DReplayer` (wireframe) when you don't have the original scene; pick `Box3DVisualReplayer`
   when you do and want it to look real.
 
 ## Doing it from code (raw API)

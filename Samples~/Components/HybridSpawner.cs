@@ -1,9 +1,9 @@
 using System.Collections.Generic;
-using Box3d.Hybrid;
+using Box3D.Hybrid;
 using UnityEngine;
 
 /// <summary>Test harness for the MonoBehaviour component layer: buttons spawn primitives carrying
-/// <see cref="Box3dBody"/> + a shape component (added at runtime), which fall onto the scene's
+/// <see cref="Box3DBody"/> + a shape component (added at runtime), which fall onto the scene's
 /// static floor. Proves the hybrid layer works both scene-authored (the floor) and runtime-added.</summary>
 public class HybridSpawner : MonoBehaviour
 {
@@ -39,7 +39,7 @@ public class HybridSpawner : MonoBehaviour
 
         for (int i = 0; i < SpawnCount; i++)
         {
-            // Inactive during setup so Box3dBody.Awake (which gathers shapes) runs AFTER the
+            // Inactive during setup so Box3DBody.Awake (which gathers shapes) runs AFTER the
             // shape component is added.
             GameObject visual = GameObject.CreatePrimitive(primitive);
             visual.SetActive(false);
@@ -54,33 +54,33 @@ public class HybridSpawner : MonoBehaviour
                     new Material(BaseMaterial) { color = Color.HSVToRGB(Random.value, 0.55f, 1f) };
             }
 
-            Box3dShape shape = AddShape(visual, kind);
+            Box3DShape shape = AddShape(visual, kind);
             shape.SetRestitution(Bounciness); // set before the body bakes the shape on activation
-            visual.AddComponent<Box3dBody>();
+            visual.AddComponent<Box3DBody>();
 
             visual.SetActive(true);
             _spawned.Add(visual);
         }
     }
 
-    private static Box3dShape AddShape(GameObject visual, ShapeKind kind)
+    private static Box3DShape AddShape(GameObject visual, ShapeKind kind)
     {
         switch (kind)
         {
             case ShapeKind.Box:
-                return visual.AddComponent<Box3dBoxShape>();
+                return visual.AddComponent<Box3DBoxShape>();
             case ShapeKind.Capsule:
-                return visual.AddComponent<Box3dCapsuleShape>();
+                return visual.AddComponent<Box3DCapsuleShape>();
             case ShapeKind.Hull:
-                Box3dHullShape hull = visual.AddComponent<Box3dHullShape>();
+                Box3DHullShape hull = visual.AddComponent<Box3DHullShape>();
                 hull.SetMesh(visual.GetComponent<MeshFilter>().sharedMesh);
                 return hull;
             default:
-                return visual.AddComponent<Box3dSphereShape>();
+                return visual.AddComponent<Box3DSphereShape>();
         }
     }
 
-    // A compound body: one Box3dBody with two child sphere shapes. If compound gathering works the
+    // A compound body: one Box3DBody with two child sphere shapes. If compound gathering works the
     // two spheres tumble together as one rigid "peanut"; if not, they'd fall independently.
     private void SpawnCompound()
     {
@@ -103,10 +103,10 @@ public class HybridSpawner : MonoBehaviour
                     ball.GetComponent<MeshRenderer>().material =
                         new Material(BaseMaterial) { color = Color.HSVToRGB(Random.value, 0.55f, 1f) };
                 }
-                ball.AddComponent<Box3dSphereShape>().SetRestitution(Bounciness);
+                ball.AddComponent<Box3DSphereShape>().SetRestitution(Bounciness);
             }
 
-            root.AddComponent<Box3dBody>(); // gathers both child sphere shapes
+            root.AddComponent<Box3DBody>(); // gathers both child sphere shapes
             root.SetActive(true);
             _spawned.Add(root);
         }
@@ -123,7 +123,7 @@ public class HybridSpawner : MonoBehaviour
 
         Vector3 anchor = new Vector3(Random.Range(-3f, 3f), 10f, Random.Range(-3f, 3f));
         var linkObjects = new List<GameObject>();
-        Box3dBody previous = null; // null on the first link → hinged to the world
+        Box3DBody previous = null; // null on the first link → hinged to the world
 
         for (int i = 0; i < links; i++)
         {
@@ -139,9 +139,9 @@ public class HybridSpawner : MonoBehaviour
                     new Material(BaseMaterial) { color = Color.HSVToRGB(Random.value, 0.55f, 1f) };
             }
 
-            link.AddComponent<Box3dBoxShape>();
-            Box3dBody body = link.AddComponent<Box3dBody>();
-            Box3dHingeJoint hinge = link.AddComponent<Box3dHingeJoint>();
+            link.AddComponent<Box3DBoxShape>();
+            Box3DBody body = link.AddComponent<Box3DBody>();
+            Box3DHingeJoint hinge = link.AddComponent<Box3DHingeJoint>();
             hinge.SetConnectedBody(previous);
             hinge.SetAnchor(new Vector3(-0.5f, 0f, 0f)); // the link's left end (local)
             hinge.SetAxis(new Vector3(0f, 0f, 1f));      // swing in the x-y plane
@@ -175,10 +175,10 @@ public class HybridSpawner : MonoBehaviour
                     new Material(BaseMaterial) { color = Color.HSVToRGB(Random.value, 0.55f, 1f) };
             }
 
-            bob.AddComponent<Box3dSphereShape>();
-            bob.AddComponent<Box3dBody>();
+            bob.AddComponent<Box3DSphereShape>();
+            bob.AddComponent<Box3DBody>();
 
-            Box3dDistanceJoint spring = bob.AddComponent<Box3dDistanceJoint>();
+            Box3DDistanceJoint spring = bob.AddComponent<Box3DDistanceJoint>();
             spring.SetConnectedBody(null);        // hang from the world
             spring.SetConnectedAnchor(top);       // world anchor point
             spring.SetLength(1.5f);               // shorter than the 3 m drop → springs up
@@ -200,7 +200,7 @@ public class HybridSpawner : MonoBehaviour
 
         Vector3 anchor = new Vector3(Random.Range(-3f, 3f), 10f, Random.Range(-3f, 3f));
         var linkObjects = new List<GameObject>();
-        Box3dBody previous = null;
+        Box3DBody previous = null;
 
         Vector3 cursor = anchor;
         Quaternion dir = Quaternion.identity;
@@ -221,9 +221,9 @@ public class HybridSpawner : MonoBehaviour
                     new Material(BaseMaterial) { color = Color.HSVToRGB(Random.value, 0.55f, 1f) };
             }
 
-            link.AddComponent<Box3dBoxShape>();
-            Box3dBody body = link.AddComponent<Box3dBody>();
-            Box3dBallJoint ball = link.AddComponent<Box3dBallJoint>();
+            link.AddComponent<Box3DBoxShape>();
+            Box3DBody body = link.AddComponent<Box3DBody>();
+            Box3DBallJoint ball = link.AddComponent<Box3DBallJoint>();
             ball.SetConnectedBody(previous);
             ball.SetAnchor(new Vector3(-0.5f, 0f, 0f));
 
@@ -244,7 +244,7 @@ public class HybridSpawner : MonoBehaviour
     {
         foreach (GameObject go in _spawned)
         {
-            if (go) Destroy(go); // Box3dBody.OnDisable destroys the native body
+            if (go) Destroy(go); // Box3DBody.OnDisable destroys the native body
         }
         _spawned.Clear();
     }

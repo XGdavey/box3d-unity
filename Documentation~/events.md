@@ -1,6 +1,6 @@
 # Events
 
-Box3d does not call you back during the step. Instead, events are buffered and **polled after
+Box3D does not call you back during the step. Instead, events are buffered and **polled after
 `Step`** — simpler to reason about, trivially thread-safe, and cache-friendly.
 
 ```csharp

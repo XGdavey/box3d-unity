@@ -1,8 +1,8 @@
 {
   "name": "com.suvitruf.box3d",
-  "version": "0.6.1",
-  "displayName": "Box3d for Unity",
-  "description": "Unity bindings for Box3d, Erin Catto's 3D physics engine. Full C API coverage via P/Invoke: rigid bodies, six shape types, nine joint types, queries, contact/sensor events, a character mover toolkit and debug drawing — with deterministic simulation and strong multithreaded performance.",
+  "version": "0.7.0",
+  "displayName": "Box3D for Unity",
+  "description": "Unity bindings for Box3D, Erin Catto's 3D physics engine. Full C API coverage via P/Invoke: rigid bodies, six shape types, nine joint types, queries, contact/sensor events, a character mover toolkit and debug drawing — with deterministic simulation and strong multithreaded performance.",
   "unity": "6000.0",
   "license": "MIT",
   "author": {
@@ -27,7 +27,7 @@
   "samples": [
     {
       "displayName": "Components (experimental)",
-      "description": "Author physics in the Inspector with the MonoBehaviour component layer (Box3dBody / Box3dShape). Buttons spawn objects onto a static floor.",
+      "description": "Author physics in the Inspector with the MonoBehaviour component layer (Box3DBody / Box3DShape). Buttons spawn objects onto a static floor.",
       "path": "Samples~/Components"
     },
     {

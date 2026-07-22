@@ -63,8 +63,8 @@ prevents you from storing them.
 - **Method names match the native API 1:1** minus the prefix (`body.GetLinearVelocity()` is
   `b3Body_GetLinearVelocity`), so box3d's own documentation applies directly. A curated set of
   properties (`body.Position`, `body.LinearVelocity`, `world.IsValid`, …) covers the hot paths.
-- `Box3d.Joint` collides with `UnityEngine.Joint` in files importing both namespaces — add
-  `using Joint = Box3d.Joint;` or qualify. (The typed joints — `RevoluteJoint` etc. — don't clash
+- `Box3D.Joint` collides with `UnityEngine.Joint` in files importing both namespaces — add
+  `using Joint = Box3D.Joint;` or qualify. (The typed joints — `RevoluteJoint` etc. — don't clash
   and are what you hold most of the time.)
 - Determinism is a box3d design goal (cross-platform deterministic math). Same inputs, same steps →
   same results, which makes it a candidate for lockstep networking.

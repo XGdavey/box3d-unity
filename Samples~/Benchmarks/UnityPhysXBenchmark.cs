@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using UnityEngine;
 
-/// <summary>PhysX twin of <see cref="Box3dBenchmark"/>: identical scenarios and layouts from
+/// <summary>PhysX twin of <see cref="Box3DBenchmark"/>: identical scenarios and layouts from
 /// <see cref="BenchmarkLayout"/>, script-driven simulation, per-body sleep disabled.</summary>
 public class UnityPhysXBenchmark : MonoBehaviour
 {

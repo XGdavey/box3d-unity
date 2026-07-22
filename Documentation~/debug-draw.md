@@ -17,7 +17,7 @@ that toggle before concluding nothing is drawn.
 
 ## Component layer: one-click overlay
 
-With the component layer you don't need any code. The `Box3dWorld` component has a **Debug Draw**
+With the component layer you don't need any code. The `Box3DWorld` component has a **Debug Draw**
 field (a `DebugDrawFlags` mask; `None` = off) plus a **Debug Draw Radius**. Pick the flags in the
 Inspector and it overlays them in the Scene view every frame while playing — e.g.
 `Shapes | Contacts | ContactNormals | Islands` to watch collisions and the solver's threading
@@ -42,7 +42,7 @@ islands. (Same Game-view Gizmos caveat applies.)
 
 Numbers to go with the geometry:
 
-- **`Box3dStatsHud`** — a drop-in component: add it to any GameObject in a scene with a `Box3dWorld`
+- **`Box3DStatsHud`** — a drop-in component: add it to any GameObject in a scene with a `Box3DWorld`
   and it overlays FPS, step time, awake/total body count, live shape/contact/joint/island counts,
   memory, and a **per-phase step-time breakdown** (broadphase / narrowphase / solve / continuous /
   sleep / sensors). The classic testbed HUD; call `Toggle()` from your own input to bind a key.
