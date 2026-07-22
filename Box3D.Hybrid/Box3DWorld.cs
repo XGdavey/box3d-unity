@@ -144,6 +144,36 @@ namespace Box3D.Hybrid
             }
         }
 
+        // Matches the world component's purple icon so the arrow reads as "the world's gravity".
+        private static readonly Color GravityGizmoColor = new Color(0.75f, 0.53f, 0.92f, 0.95f);
+
+        private void OnDrawGizmosSelected()
+        {
+            float magnitude = Gravity.magnitude;
+            if (magnitude < 1e-4f) return; // zero gravity — nothing to point at
+
+            Vector3 origin = transform.position;
+            Vector3 dir = Gravity / magnitude;
+            // Shaft length tracks strength (1 g ≈ 1.5 m), clamped so extreme values stay readable.
+            float length = Mathf.Clamp(1.5f * magnitude / 9.81f, 0.4f, 4f);
+            Vector3 tip = origin + dir * length;
+
+            // A basis perpendicular to the arrow for the head fins (gravity is usually straight
+            // down, where Vector3.up is degenerate — fall back to right).
+            Vector3 side = Vector3.Cross(dir, Vector3.up);
+            if (side.sqrMagnitude < 1e-4f) side = Vector3.Cross(dir, Vector3.right);
+            side.Normalize();
+            Vector3 side2 = Vector3.Cross(dir, side);
+
+            Gizmos.color = GravityGizmoColor;
+            Gizmos.DrawLine(origin, tip);
+            float head = Mathf.Min(0.3f * length, 0.4f);
+            foreach (Vector3 fin in new[] { side, -side, side2, -side2 })
+            {
+                Gizmos.DrawLine(tip, tip - dir * head + fin * (head * 0.5f));
+            }
+        }
+
         private void OnDestroy()
         {
             if (_world.IsValid) _world.Destroy();

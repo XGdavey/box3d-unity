@@ -18,6 +18,8 @@ If you know Unity's physics components, you already know these:
 | `Box3DCapsuleShape` | `CapsuleCollider` | A capsule shape (radius, height, axis). |
 | `Box3DHullShape` | convex `MeshCollider` | Convex hull from a mesh's vertices; works on dynamic bodies. |
 | `Box3DMeshShape` | non-convex `MeshCollider` | Triangle mesh from a mesh asset; **static bodies only**. |
+| `Box3DWind` | `WindZone` (visual-only in Unity) | Pushes dynamic bodies inside a box volume; optional gusts. |
+| `Box3DExplosion` | — | Radial impulse burst with radius + falloff. |
 
 ## Quick start
 
@@ -40,7 +42,8 @@ Optional — placed automatically the first time a body needs it. Add one explic
 - **Sub Step Count** — solver sub-steps per step (higher = stiffer joints/stacks, slower).
 - **Worker Count** — physics threads; 0 = auto (about half the logical cores).
 
-Only one world is used; a second `Box3DWorld` logs a warning.
+Only one world is used; a second `Box3DWorld` logs a warning. Selecting the world draws a purple
+gravity arrow in the Scene view — direction is the gravity vector, length its strength (1 g ≈ 1.5 m).
 
 ## Box3DBody
 
@@ -118,6 +121,22 @@ is the local pivot point.
 Frames are computed so the joint is satisfied at the pose you built it in — creating it never snaps
 the bodies. For the wheel joint, put it on the wheel and set Connected Body to the chassis; the
 suspension axis and spin (axle) axis are configurable.
+
+## Forces
+
+Scene-authorable force fields — select one to see its gizmos:
+
+- **`Box3DWind`** — a box volume that pushes every dynamic body inside along the object's forward
+  (+Z) axis each step; rotate the object to aim it. **Strength** is newtons (negative blows
+  backward); **Ignore Mass** applies it as acceleration so light and heavy bodies drift equally;
+  **Gust Amplitude** / **Gust Frequency** add Perlin-noise gusting. Gizmos show the zone and a grid
+  of arrows whose length follows the live gust strength in play mode.
+- **`Box3DExplosion`** — a radial impulse burst (native `World.Explode`) at the object's position:
+  full **Impulse Per Area** inside **Radius**, fading to zero over **Falloff** beyond it. Trigger
+  with `Explode()` from code, the Inspector's **Explode** button, or **Explode On Enable** for
+  spawned prefabs. Gizmos show both radii and the blast rays.
+
+Both live under **Add Component → Box3D → Forces** and **GameObject → Box3D**.
 
 ## Tooling components
 

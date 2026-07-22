@@ -54,6 +54,20 @@ namespace Box3D.Hybrid.Editor
             Place(go, command, "Create Box3D Body");
         }
 
+        [MenuItem(Root + "Wind", false, 30)]
+        private static void CreateWind(MenuCommand command)
+        {
+            var go = new GameObject("Wind", typeof(Box3DWind));
+            Place(go, command, "Create Box3D Wind");
+        }
+
+        [MenuItem(Root + "Explosion", false, 31)]
+        private static void CreateExplosion(MenuCommand command)
+        {
+            var go = new GameObject("Explosion", typeof(Box3DExplosion));
+            Place(go, command, "Create Box3D Explosion");
+        }
+
         [MenuItem(Root + "Static Box", false, 40)]
         private static void CreateStaticBox(MenuCommand command)
         {

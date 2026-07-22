@@ -23,6 +23,13 @@
   Project window and Hierarchy.
 - **Add Component menu categories**: components are grouped under `Box3D/` — `Shapes/`, `Joints/`,
   `Replay/`, `Diagnostics/`, with `Body` and `World` at the top level.
+- **Gravity gizmo**: selecting a `Box3DWorld` draws a purple gravity arrow in the Scene view —
+  direction is the gravity vector, length its strength (1 g ≈ 1.5 m, clamped for readability).
+- **Force components** (Add Component → `Box3D/Forces`, GameObject → Box3D): **`Box3DWind`** — a
+  box volume pushing dynamic bodies along its forward axis with optional Perlin gusts, visualized
+  as a zone + arrow grid that tracks live gust strength; **`Box3DExplosion`** — a radial impulse
+  burst (native `World.Explode`) with radius/falloff gizmos, an Inspector **Explode** button and
+  **Explode On Enable** for spawned prefabs.
 
 ## [0.6.1] — 2026-07-13
 
