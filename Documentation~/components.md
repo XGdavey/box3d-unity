@@ -151,16 +151,17 @@ Both live under **Add Component → Box3D → Forces** and **GameObject → Box3
 
 `Box3DRope` is a Source 2-style cable (**GameObject → Box3D → Rope**). Put it on the start object,
 point **End Point** at the far end (or drag the Scene-view handle when it's empty), set
-**Segments** / **Slack** / **Radius** — the Scene view always shows the settled hang while you
-edit, and **▶ Simulate in Editor** animates it live. Then choose:
+**Segments** / **Slack** / **Radius** — the Scene view always shows the true drape while you edit:
+the preview runs a real Box3D simulation in a throwaway world with the scene's shapes frozen as
+static collision, so the rope hangs over geometry exactly as it will in play mode.
+**▶ Simulate in Editor** animates the same simulation live. Then choose:
 
 - **Dynamic** (default): at runtime the rope becomes capsule segment bodies linked by ball joints.
   It spawns **taut** between the ends and sags into place under gravity, draping onto whatever it
-  meets — the editor preview shows the free hang only (it can't see scene collision; press Play
-  for the true drape). Ends attach to any `Box3DBody` found at the endpoints — the rope swings
-  with them and tugs on them — otherwise they pin to the world. The rope collides with the scene,
-  but not with the bodies it's attached to (the anchors sit at their surface, and contacts there
-  would fight the joints); enable **Collide With Attached** if you want it to drape over them.
+  meets. Ends attach to any `Box3DBody` found at the endpoints — the rope swings with them and
+  tugs on them — otherwise they pin to the world. The rope collides with the scene, but not with
+  the bodies it's attached to (the anchors sit at their surface, and contacts there would fight
+  the joints); enable **Collide With Attached** if you want it to drape over them.
 - **Baked** — press **Bake Current Shape**: the curve freezes (no simulation in game) with
   optional static capsule collision, cheap enough to scatter everywhere like Source 2's static
   cables. A rope set to Baked without ever baking settles once at startup. **Make Dynamic** reverts.

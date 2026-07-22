@@ -77,6 +77,19 @@ namespace Box3D.Hybrid
 
         internal RopeMode CurrentMode => Mode;
         internal bool HasBake => BakedPoints != null && BakedPoints.Length > 1;
+        internal int SegmentCount => Segments;
+        internal float RopeRadius => Radius;
+        internal bool CollidesWithAttached => CollideWithAttached;
+
+        internal Box3DBody FindStartAttachment()
+        {
+            return AttachStartToBody ? GetComponentInParent<Box3DBody>() : null;
+        }
+
+        internal Box3DBody FindEndAttachment()
+        {
+            return AttachEndToBody && EndPoint ? EndPoint.GetComponentInParent<Box3DBody>() : null;
+        }
 
         internal Vector3 StartWorld => transform.position;
 
@@ -167,8 +180,8 @@ namespace Box3D.Hybrid
             }
 
             // Ends: a Box3DBody at the endpoint (rope follows/pulls it), else a static world pin.
-            Box3DBody startBody = AttachStartToBody ? GetComponentInParent<Box3DBody>() : null;
-            Box3DBody endBody = AttachEndToBody && EndPoint ? EndPoint.GetComponentInParent<Box3DBody>() : null;
+            Box3DBody startBody = FindStartAttachment();
+            Box3DBody endBody = FindEndAttachment();
             joints.Add(AttachEnd(_segments[0], new float3(0f, 0f, -_halfSegment), nodes[0], startBody, ref _startPin));
             joints.Add(AttachEnd(_segments[Segments - 1], new float3(0f, 0f, _halfSegment), nodes[Segments], endBody, ref _endPin));
 
@@ -188,7 +201,7 @@ namespace Box3D.Hybrid
 
         // Same material/filter convention as Box3DShape: category from the GameObject's layer,
         // mask from the layer collision matrix — so ropes honor Project Settings → Physics.
-        private ShapeDef SegmentShapeDef()
+        internal ShapeDef SegmentShapeDef()
         {
             ShapeDef def = ShapeDef.Default;
             def.Density = Density;

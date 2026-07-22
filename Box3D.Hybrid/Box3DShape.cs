@@ -157,6 +157,20 @@ namespace Box3D.Hybrid
         /// in-place replacement (sphere and capsule). Other shapes keep their creation geometry.</summary>
         protected virtual void UpdateLiveGeometry() { }
 
+#if UNITY_EDITOR
+        /// <summary>Creates this shape on a body in a throwaway preview world (rope editor
+        /// preview), leaving component state alone. The body must already sit at this shape's
+        /// transform pose.</summary>
+        internal Shape CreateDetachedShape(Body body)
+        {
+            return CreateShape(body, float3.zero, quaternion.identity, transform.lossyScale);
+        }
+
+        /// <summary>Frees native geometry a detached preview shape allocated (mesh shapes).
+        /// Called after the preview world is destroyed.</summary>
+        internal virtual void ReleaseDetachedGeometry() { }
+#endif
+
         protected abstract Shape CreateShape(Body body, float3 localPosition, quaternion localRotation, float3 scale);
 
         /// <summary>Frees any native geometry this shape owns. Called after the body — and its

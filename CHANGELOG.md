@@ -31,8 +31,9 @@
   burst (native `World.Explode`) with radius/falloff gizmos, an Inspector **Explode** button and
   **Explode On Enable** for spawned prefabs.
 - **`Box3DRope`** — Source 2-style cables (`Box3D/Rope`, GameObject → Box3D → Rope): the Scene view
-  shows the settled hang live while editing (verlet preview under the world's gravity, draggable
-  far-end handle, an editor **Simulate** toggle), then **Bake** freezes the curve into a static
+  shows the true drape live while editing — the preview runs a real Box3D simulation in a throwaway
+  world with the scene's shapes frozen as static collision (draggable far-end handle, an animated
+  editor **Simulate** toggle), then **Bake** freezes the curve into a static
   cable with optional static collision — or leave it **Dynamic** and it builds capsule segments +
   ball joints at runtime, attaching to any `Box3DBody` at its endpoints, spawning taut and sagging
   into place so it drapes onto scene objects instead of spawning through them. Segments are continuous

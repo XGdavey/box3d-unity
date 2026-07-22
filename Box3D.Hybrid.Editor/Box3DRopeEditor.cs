@@ -1,17 +1,20 @@
+using System;
 using UnityEditor;
 using UnityEngine;
 
 namespace Box3D.Hybrid.Editor
 {
-    /// <summary>Rope inspector, modeled on Source 2's Hammer cable workflow: the Scene view always
-    /// shows the settled hang while editing (move either end and it re-drapes), **Simulate in
-    /// Editor** animates it live, **Bake Current Shape** freezes the curve for Baked mode, and
-    /// **Make Dynamic** reverts. When End Point is empty the far end gets a draggable handle.</summary>
+    /// <summary>Rope inspector, modeled on Source 2's Hammer cable workflow. The Scene view always
+    /// shows the true drape while editing: the preview runs a real Box3D simulation in a throwaway
+    /// world with the scene frozen as static collision, so the rope hangs over geometry exactly as
+    /// it will in play mode — and **Bake Current Shape** captures that. **Simulate in Editor**
+    /// animates the same simulation live (drag an endpoint and the rope follows); **Make Dynamic**
+    /// reverts a bake. When End Point is empty the far end gets a draggable handle.</summary>
     [CustomEditor(typeof(Box3DRope))]
     public class Box3DRopeEditor : UnityEditor.Editor
     {
+        private Box3DRopePreview _simulation;
         private Vector3[] _nodes;
-        private Vector3[] _previous;
         private bool _simulating;
         private Vector3 _lastStart;
         private Vector3 _lastEnd;
@@ -29,14 +32,20 @@ namespace Box3D.Hybrid.Editor
         {
             EditorApplication.update -= OnEditorUpdate;
             Undo.undoRedoPerformed -= RefreshPreview;
-            _simulating = false;
+            StopSimulation();
         }
 
         public override void OnInspectorGUI()
         {
             EditorGUI.BeginChangeCheck();
             DrawDefaultInspector();
-            if (EditorGUI.EndChangeCheck() && !_simulating) RefreshPreview();
+            if (EditorGUI.EndChangeCheck())
+            {
+                // Parameters changed: a running simulation restarts with them; a static preview
+                // just recomputes.
+                if (_simulating) StopSimulation(keepSimulating: true);
+                else RefreshPreview();
+            }
 
             if (Application.isPlaying) return;
             EditorGUILayout.Space();
@@ -48,7 +57,11 @@ namespace Box3D.Hybrid.Editor
                 if (simulate != _simulating)
                 {
                     _simulating = simulate;
-                    if (!_simulating) RefreshPreview();
+                    if (!_simulating)
+                    {
+                        StopSimulation();
+                        RefreshPreview();
+                    }
                 }
                 if (GUILayout.Button("Bake Current Shape"))
                 {
@@ -56,9 +69,11 @@ namespace Box3D.Hybrid.Editor
                     Rope.Bake(_nodes ?? Rope.ComputeSettledPoints());
                     EditorUtility.SetDirty(Rope);
                     _simulating = false;
+                    StopSimulation();
                     RefreshPreview();
                 }
                 EditorGUILayout.HelpBox("Dynamic: simulated in game as capsule segments + ball joints. " +
+                    "The preview collides with the scene's Box3D shapes (frozen at their current pose). " +
                     "Bake to freeze the current hang into a static cable instead.", MessageType.None);
             }
             else
@@ -94,7 +109,7 @@ namespace Box3D.Hybrid.Editor
                 }
             }
 
-            // Re-drape when either endpoint is moved.
+            // Re-drape when either endpoint is moved (the running simulation follows by itself).
             if (!_simulating && (_lastStart != Rope.StartWorld || _lastEnd != Rope.EndWorld))
             {
                 RefreshPreview();
@@ -104,21 +119,31 @@ namespace Box3D.Hybrid.Editor
         private void OnEditorUpdate()
         {
             if (!_simulating || Application.isPlaying || !Rope) return;
-            if (_nodes == null || _nodes.Length != RopeNodeCount()) RefreshPreview();
 
-            // Two verlet steps per editor tick: lively but stable, endpoints tracked live.
-            for (int i = 0; i < 2; i++)
+            try
             {
-                Box3DRope.StepCurve(_nodes, _previous, Rope.StartWorld, Rope.EndWorld,
-                    Rope.SettledSegmentLength(), Rope.SceneGravity(), 1f / 60f);
+                _simulation ??= new Box3DRopePreview(Rope);
+                _simulation.Step(1f / 60f);
+                _simulation.Step(1f / 60f);
+                _nodes = _simulation.Nodes;
+            }
+            catch (Exception e)
+            {
+                Debug.LogWarning($"[Box3D] Rope editor simulation unavailable: {e.Message}", Rope);
+                _simulating = false;
+                StopSimulation();
+                return;
             }
             Rope.ApplyToLine(_nodes);
             SceneView.RepaintAll();
         }
 
-        private int RopeNodeCount()
+        // keepSimulating: drop only the world (it rebuilds next tick with fresh parameters).
+        private void StopSimulation(bool keepSimulating = false)
         {
-            return serializedObject.FindProperty("Segments").intValue + 1;
+            _simulation?.Dispose();
+            _simulation = null;
+            if (!keepSimulating) _simulating = false;
         }
 
         private void RefreshPreview()
@@ -132,8 +157,20 @@ namespace Box3D.Hybrid.Editor
                 Rope.ApplyToLine(Rope.BakedToWorld());
                 return;
             }
-            _nodes = Rope.ComputeSettledPoints();
-            _previous = (Vector3[])_nodes.Clone();
+
+            try
+            {
+                // The real simulation, scene collision included — what play mode will produce.
+                using var simulation = new Box3DRopePreview(Rope);
+                _nodes = (Vector3[])simulation.Settle().Clone();
+            }
+            catch (Exception e)
+            {
+                // No native library (e.g. unsupported editor platform): fall back to the
+                // collision-less verlet hang so the preview still works.
+                Debug.LogWarning($"[Box3D] Rope preview fell back to verlet (native sim unavailable): {e.Message}", Rope);
+                _nodes = Rope.ComputeSettledPoints();
+            }
             Rope.ApplyToLine(_nodes);
         }
     }

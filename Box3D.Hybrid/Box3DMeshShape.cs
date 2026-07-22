@@ -60,6 +60,12 @@ namespace Box3D.Hybrid
             if (_mesh.IsCreated) _mesh.Destroy();
         }
 
+#if UNITY_EDITOR
+        // The detached preview shape stored its TriangleMesh in _mesh like a live one — free it
+        // the same way once the preview world is gone.
+        internal override void ReleaseDetachedGeometry() => ReleaseGeometry();
+#endif
+
         private void OnDrawGizmosSelected()
         {
             if (!Mesh) return;
