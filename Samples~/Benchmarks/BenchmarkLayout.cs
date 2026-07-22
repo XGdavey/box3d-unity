@@ -22,7 +22,7 @@ public struct BenchmarkSpawn
     public float Size;
 }
 
-/// <summary>Generates identical seeded spawn layouts for the Box3d and PhysX benchmark twins.
+/// <summary>Generates identical seeded spawn layouts for the Box3D and PhysX benchmark twins.
 /// Both engines MUST consume the same array so runs are directly comparable.</summary>
 public static class BenchmarkLayout
 {

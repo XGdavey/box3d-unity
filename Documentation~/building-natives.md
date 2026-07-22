@@ -1,12 +1,12 @@
 # Building the native libraries
 
-The package ships prebuilt Box3d binaries in `Plugins/`; you only need this page to add a
-platform, update the pinned Box3d version, or audit what you're running.
+The package ships prebuilt Box3D binaries in `Plugins/`; you only need this page to add a
+platform, update the pinned Box3D version, or audit what you're running.
 
-All binaries are built from the **pinned Box3d commit** recorded in `Box3d.Native~/VERSION`,
-Release configuration, single precision, via the scripts in `Box3d.Native~/`. The C API surface
+All binaries are built from the **pinned Box3D commit** recorded in `Box3D.Native~/VERSION`,
+Release configuration, single precision, via the scripts in `Box3D.Native~/`. The C API surface
 (~580 exported functions) must match the generated bindings — never mix binaries and bindings
-from different Box3d commits.
+from different Box3D commits.
 
 | Platform | Binary | Script | Status |
 |---|---|---|---|
@@ -17,7 +17,7 @@ from different Box3d commits.
 | macOS universal | `Plugins/macOS/libbox3d.dylib` | `build_macos.sh` (Xcode) | script ready, binary pending |
 | iOS arm64 (static) | `Plugins/iOS/libbox3d.a` | `build_ios.sh` (Xcode) | script ready, binary pending |
 
-Each script clones nothing: it needs a Box3d checkout at the pinned commit. All paths are
+Each script clones nothing: it needs a Box3D checkout at the pinned commit. All paths are
 resolved automatically where possible and overridable via environment variables:
 
 | Variable | Used by | Default |
@@ -44,14 +44,14 @@ archive was built with 3.1.39 for Unity 6000.0.
 ## iOS specifics
 
 iOS requires static linking. The C# side already handles this: every `DllImport` uses a constant
-that compiles to `"__Internal"` on iOS device builds (`Box3d/Bindings/Box3dLibrary.cs`), so only
+that compiles to `"__Internal"` on iOS device builds (`Box3D/Bindings/Box3DLibrary.cs`), so only
 the `.a` binary and its import settings are needed.
 
-## Updating the Box3d version
+## Updating the Box3D version
 
-1. Check out the new Box3d commit; update `Box3d.Native~/VERSION`.
+1. Check out the new Box3D commit; update `Box3D.Native~/VERSION`.
 2. Rebuild **all** platform binaries.
-3. Regenerate the bindings: `Box3d.Native~/bindgen/generate.sh` (requires the .NET 8 SDK and the
+3. Regenerate the bindings: `Box3D.Native~/bindgen/generate.sh` (requires the .NET 8 SDK and the
    ClangSharpPInvokeGenerator tool — see comments in the script). The pipeline regenerates the raw
    externs, the public forwarding methods, and a report of anything not auto-wrapped.
 4. Run the test suite — the struct-size and default-value tests are designed to catch ABI drift
@@ -59,6 +59,6 @@ the `.a` binary and its import settings are needed.
 
 ## Determinism note
 
-Box3d enforces deterministic math (`-ffp-contract=off`, custom trig). The build scripts preserve
+Box3D enforces deterministic math (`-ffp-contract=off`, custom trig). The build scripts preserve
 those flags — if you build with different toolchains or flags, cross-platform determinism may be
 degraded even though everything still works.

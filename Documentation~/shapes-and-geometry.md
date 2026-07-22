@@ -83,7 +83,7 @@ Concavity splits by **static vs. dynamic**, as in every rigid-body engine:
 - **Dynamic (moving) concave objects are built from convex pieces.** A moving body collides using
   convex shapes only (sphere / capsule / box / hull), so a moving concave object is a **compound of
   convex parts** — either a baked [`Compound`](#compounds) in the code API, or, in the
-  [component layer](components.md), several shape components under one `Box3dBody` (they merge into
+  [component layer](components.md), several shape components under one `Box3DBody` (they merge into
   one compound collider, mirroring Unity's own multi-collider Rigidbody).
 
 There is no built-in convex decomposition: author the convex pieces yourself, or precompute them with

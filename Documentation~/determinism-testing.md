@@ -40,7 +40,7 @@ own game state, …). The order of `bodies` must match across the runs you compa
 
 ## A determinism unit test
 
-`Box3d.Tests/DeterminismTests.cs` is a ready template: it builds a fixed, randomness-free scenario (a
+`Box3D.Tests/DeterminismTests.cs` is a ready template: it builds a fixed, randomness-free scenario (a
 leaning box stack), steps it, and asserts two runs produce an identical per-step hash stream. It logs the
 final hash so you can compare it elsewhere. Copy it and swap in your own scenario.
 
@@ -49,10 +49,10 @@ can run in a non-Unity harness.
 
 ## Checking across platforms (Editor / Android / WebGL)
 
-`Box3dDeterminismHarness` runs the shared `DeterminismScenario` and shows its hash signature on screen —
+`Box3DDeterminismHarness` runs the shared `DeterminismScenario` and shows its hash signature on screen —
 so you can build the *same* scene to different targets and compare by eye.
 
-1. New empty scene → add a GameObject with **Box3d Determinism Harness**. (No camera or lights needed;
+1. New empty scene → add a GameObject with **Box3D Determinism Harness**. (No camera or lights needed;
    it draws with IMGUI.)
 2. Build and run it on each target you care about — **Editor** (x64/Mono), **Android** (arm64/IL2CPP),
    **WebGL** (WASM). Each shows platform, backend, and four hashes: checkpoints at 25/50/75 % and the

@@ -1,6 +1,6 @@
 # Character mover
 
-Box3d ships a *toolkit* for kinematic character controllers, not a turnkey component: you own the
+Box3D ships a *toolkit* for kinematic character controllers, not a turnkey component: you own the
 character's position and velocity; the toolkit tells you where the world pushes back. This is
 deliberate — every game tunes step height, slopes, and jumping differently.
 
@@ -43,11 +43,11 @@ private void StepCharacter(float dt)
 
     // 3. Integrate input + gravity into a desired move, let the solver correct it.
     _velocity.y -= gravity * dt;
-    PlaneSolverResult solved = Box3d.Mover.SolvePlanes(_velocity * dt, active);
+    PlaneSolverResult solved = Box3D.Mover.SolvePlanes(_velocity * dt, active);
     _position += solved.Delta;
 
     // 4. Clip velocity so we slide along surfaces instead of accumulating into them.
-    _velocity = Box3d.Mover.ClipVector(_velocity, active);
+    _velocity = Box3D.Mover.ClipVector(_velocity, active);
 }
 ```
 

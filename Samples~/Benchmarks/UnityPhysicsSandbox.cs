@@ -1,9 +1,9 @@
 using System.Diagnostics;
 using UnityEngine;
 
-/// <summary>PhysX twin of <see cref="Box3dSandbox"/>: identical sphere rain (same seed, counts,
+/// <summary>PhysX twin of <see cref="Box3DSandbox"/>: identical sphere rain (same seed, counts,
 /// sizes) simulated by Unity's built-in physics. Switches PhysX to script-driven simulation so the
-/// step cost can be measured the same way Box3d's is.</summary>
+/// step cost can be measured the same way Box3D's is.</summary>
 public class UnityPhysicsSandbox : MonoBehaviour
 {
     [SerializeField, Tooltip("Number of spheres to drop.")]
