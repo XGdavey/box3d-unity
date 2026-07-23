@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using UnityEngine;
 
-/// <summary>PhysX twin of <see cref="Box3dClothSandbox"/>: the same node grid stitched with
+/// <summary>PhysX twin of <see cref="Box3DClothSandbox"/>: the same node grid stitched with
 /// linear-limited ConfigurableJoints, draped over the same sphere obstacle, measured the same way.</summary>
 public class UnityClothSandbox : MonoBehaviour
 {

@@ -1,8 +1,8 @@
 # Native build output (WSL symlinks inside break Windows git — never commit).
-Box3d.Native~/build*/
+Box3D.Native~/build*/
 
-# Bindgen intermediate output (deployed copies live in Box3d/).
-Box3d.Native~/bindgen/generated/
+# Bindgen intermediate output (deployed copies live in Box3D/).
+Box3D.Native~/bindgen/generated/
 
 # OS noise
 .DS_Store

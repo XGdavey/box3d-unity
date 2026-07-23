@@ -2,7 +2,7 @@
 
 ## Multithreading
 
-Box3d runs its own internal job scheduler. Opt in per world:
+Box3D runs its own internal job scheduler. Opt in per world:
 
 ```csharp
 WorldDef def = WorldDef.Default;
@@ -46,6 +46,6 @@ registration wins across all worlds. Filter and pre-solve callbacks are properly
 
 ## Logging and asserts
 
-Box3d's internal log and assert output is routed to the Unity console automatically at startup
-(`Box3dRuntime.Install`, run via `RuntimeInitializeOnLoadMethod`). Assertion failures from API
+Box3D's internal log and assert output is routed to the Unity console automatically at startup
+(`Box3DRuntime.Install`, run via `RuntimeInitializeOnLoadMethod`). Assertion failures from API
 misuse (bad defs, stale ids in debug paths) appear as errors with the native file/line.

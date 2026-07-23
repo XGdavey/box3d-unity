@@ -5,14 +5,14 @@
 Package Manager → *Add package from git URL* → `https://github.com/Suvitruf/box3d-unity.git`.
 Unity 6000.0+ is required. `com.unity.mathematics` is pulled in automatically.
 
-Box3d worlds are completely independent from Unity's built-in physics — nothing here touches
+Box3D worlds are completely independent from Unity's built-in physics — nothing here touches
 PhysX, colliders, or `Rigidbody`. You create a world, populate it, step it, and copy the results
 onto your Transforms.
 
 ## Your first world
 
 ```csharp
-using Box3d;
+using Box3D;
 using Unity.Mathematics;
 using UnityEngine;
 
@@ -72,7 +72,7 @@ Sleeping bodies produce no events, so a settled scene costs almost nothing to sy
 
 ## Stepping advice
 
-- Call `Step` from `FixedUpdate` with `Time.fixedDeltaTime`. Box3d is designed for fixed steps.
+- Call `Step` from `FixedUpdate` with `Time.fixedDeltaTime`. Box3D is designed for fixed steps.
 - The default 4 sub-steps (`world.Step(dt)` = `world.Step(dt, 4)`) suit most games. More sub-steps
   buy constraint stiffness; fewer buy speed.
 - For multithreading, set `WorldDef.WorkerCount` before creating the world (a good default is the

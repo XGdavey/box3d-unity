@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
-using Box3d;
+using Box3D;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Rendering;

@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>Renders a cloth node grid as a connected mesh and updates vertices from node
-/// positions each frame. Shared by the Box3d and PhysX cloth sandboxes. Single-winding
+/// positions each frame. Shared by the Box3D and PhysX cloth sandboxes. Single-winding
 /// triangles; both sides visible via Cull Off on the material (duplicating triangles with
 /// flipped winding z-fights and corrupts recalculated normals).</summary>
 public class ClothMeshVisual
