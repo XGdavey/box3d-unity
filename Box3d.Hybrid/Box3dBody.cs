@@ -1,3 +1,4 @@
+using System;
 using System.Runtime.InteropServices;
 using Unity.Mathematics;
 using UnityEngine;
@@ -49,6 +50,7 @@ namespace Box3D.Hybrid
         private Box3DWorld _world;
         private Body _body;
         private Box3DShape[] _shapes;
+        private IBox3DHitReceiver[] _hitReceivers;
         // A handle to this component lives in the native body's userData, so a body-move event
         // dereferences straight back here — no managed-side lookup list.
         private GCHandle _handle;
@@ -100,6 +102,11 @@ namespace Box3D.Hybrid
             AllowFastRotation = value;
         }
 
+        // Serialized damping, readable without a live body — the editor physics simulation builds
+        // its preview bodies with the same damping the runtime will use.
+        internal float LinearDampingValue => LinearDamping;
+        internal float AngularDampingValue => AngularDamping;
+
         private void Awake()
         {
             _world = Box3DWorld.Instance;
@@ -125,7 +132,12 @@ namespace Box3D.Hybrid
             GatherShapes(transform, shapes, isRoot: true);
             _shapes = shapes.ToArray();
 
+            var receivers = new System.Collections.Generic.List<IBox3DHitReceiver>();
+
+            _hitReceivers = receivers.ToArray();
+
             quaternion bodyInverse = math.inverse((quaternion)transform.rotation);
+            IntPtr ownerData = GCHandle.ToIntPtr(_handle);
             foreach (Box3DShape shape in _shapes)
             {
                 Transform shapeTransform = shape.transform;
@@ -170,7 +182,8 @@ namespace Box3D.Hybrid
 
         // Collects shape components on this GameObject and descendants, stopping at any nested
         // Box3DBody (that subtree belongs to the other body). Unity's compound-collider gathering.
-        private static void GatherShapes(Transform node, System.Collections.Generic.List<Box3DShape> result, bool isRoot)
+        // Internal so the editor physics simulation builds its preview bodies from the same rules.
+        internal static void GatherShapes(Transform node, System.Collections.Generic.List<Box3DShape> result, bool isRoot)
         {
             if (!isRoot && node.GetComponent<Box3DBody>()) return;
 
@@ -203,7 +216,7 @@ namespace Box3D.Hybrid
         }
 
         /// <summary>Called by the world after each step to write a body-move event to the Transform.</summary>
-        internal void ApplyMoveEvent(B3Transform moved)
+        internal void ApplyMoveEvent(B3WorldTransform moved)
         {
             transform.SetPositionAndRotation(moved.Position, moved.Rotation);
         }

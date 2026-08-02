@@ -10,9 +10,16 @@ namespace Box3D
     //   destroyed right after creating shapes from it.
     // - TriangleMesh / HeightField / Compound data is REFERENCED by shapes — it must stay alive
     //   until every shape using it is destroyed.
+    //
+    // THE COPY RULE (#2): these are value types, so every copy shares the same native pointer.
+    // Destroy() nulls only the copy it was called on — other copies keep the now-dangling pointer
+    // and still report IsCreated. Destroy exactly once, through one designated copy (typically the
+    // field you stored it in), and never through a local or a returned copy as well.
 
     /// <summary>Owns native convex hull data (b3HullData*). Cloned at shape creation — safe to
-    /// destroy after use. For plain boxes prefer the stack-based <see cref="BoxHull"/>.</summary>
+    /// destroy after use. For plain boxes prefer the stack-based <see cref="BoxHull"/>.
+    /// <para>Value type: copies share one native pointer — call <see cref="Destroy"/> exactly once,
+    /// through one copy; other copies still report <see cref="IsCreated"/> but dangle.</para></summary>
     public struct Hull
     {
         internal IntPtr Data;
@@ -53,7 +60,9 @@ namespace Box3D
     }
 
     /// <summary>Owns native triangle mesh data (b3MeshData*). Static bodies only. REFERENCED by
-    /// shapes — must outlive every shape created from it.</summary>
+    /// shapes — must outlive every shape created from it.
+    /// <para>Value type: copies share one native pointer — call <see cref="Destroy"/> exactly once,
+    /// through one copy; other copies still report <see cref="IsCreated"/> but dangle.</para></summary>
     public struct TriangleMesh
     {
         internal IntPtr Data;
@@ -105,26 +114,39 @@ namespace Box3D
     }
 
     /// <summary>Owns native height field data (b3HeightFieldData*). Static bodies only.
-    /// REFERENCED by shapes — must outlive every shape created from it.</summary>
+    /// REFERENCED by shapes — must outlive every shape created from it.
+    /// <para>Value type: copies share one native pointer — call <see cref="Destroy"/> exactly once,
+    /// through one copy; other copies still report <see cref="IsCreated"/> but dangle.</para></summary>
     public struct HeightField
     {
         internal IntPtr Data;
 
         public bool IsCreated => Data != IntPtr.Zero;
 
-        /// <summary>Builds a height field from row-major grid heights (countX × countZ values).
+        /// <summary>Per-quad material index that removes a quad's collision (a hole).</summary>
+        public const byte HoleMaterial = 0xFF;
+
+        /// <summary>Builds a height field from row-major grid heights (countX × countZ values,
+        /// index = z * countX + x; +X spans columns, +Z spans rows from the field's corner origin).
         /// Min/max heights define the quantization range; use the same values on adjacent fields
-        /// that must line up.</summary>
+        /// that must line up. Optional per-quad material indices ((countX-1) × (countZ-1) values,
+        /// same ordering) flow into hit events; <see cref="HoleMaterial"/> (0xFF) removes a quad's
+        /// collision — terrain holes.</summary>
         public static unsafe HeightField Create(ReadOnlySpan<float> heights, int countX, int countZ,
-            float3 scale, float globalMinimumHeight, float globalMaximumHeight, bool clockwiseWinding = false)
+            float3 scale, float globalMinimumHeight, float globalMaximumHeight, bool clockwiseWinding = false,
+            ReadOnlySpan<byte> materialIndices = default)
         {
             if (countX < 2 || countZ < 2 || heights.Length != countX * countZ)
                 throw new ArgumentException("heights must contain exactly countX*countZ values (each count >= 2)", nameof(heights));
+            if (materialIndices.Length != 0 && materialIndices.Length != (countX - 1) * (countZ - 1))
+                throw new ArgumentException("materialIndices must be empty or contain exactly (countX-1)*(countZ-1) values", nameof(materialIndices));
             fixed (float* h = heights)
+            fixed (byte* m = materialIndices)
             {
                 var def = new b3HeightFieldDef
                 {
                     heights = h,
+                    materialIndices = m,
                     scale = scale,
                     countX = countX,
                     countZ = countZ,
@@ -175,7 +197,9 @@ namespace Box3D
     }
 
     /// <summary>Owns native compound data (b3CompoundData*): up to 64K spheres/capsules/hulls baked
-    /// into one static shape. Static bodies only. REFERENCED by shapes — must outlive them.</summary>
+    /// into one static shape. Static bodies only. REFERENCED by shapes — must outlive them.
+    /// <para>Value type: copies share one native pointer — call <see cref="Destroy"/> exactly once,
+    /// through one copy; other copies still report <see cref="IsCreated"/> but dangle.</para></summary>
     public struct Compound
     {
         internal IntPtr Data;

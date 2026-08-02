@@ -121,9 +121,22 @@ namespace Box3D.Hybrid
             // released by their Box3DBody after it destroys the body.
             if (_ownBody.IsValid)
             {
+                // Orphan shape: the self-created static body is ours (destroying it destroys the shape).
                 _ownBody.Destroy();
                 ReleaseGeometry();
             }
+            else if (_shape.IsValid)
+            {
+                // Body-managed shape destroyed individually (component removed, or its child
+                // GameObject destroyed while the body lives): remove the native shape so its
+                // collision doesn't linger, and re-derive the body's mass. During whole-body
+                // teardown the body's destroy already invalidated the id, so this no-ops there.
+                _shape.Destroy(updateBodyMass: true);
+            }
+            // Geometry (mesh/height-field) is user-owned memory independent of the world — free it
+            // even when the world was destroyed first. ReleaseGeometry is idempotent, so the owning
+            // Box3DBody's sweep may run before or after this in any teardown order.
+            ReleaseGeometry();
         }
 
         protected ShapeDef BuildDef()
@@ -187,6 +200,41 @@ namespace Box3D.Hybrid
         /// in-place replacement (sphere and capsule). Other shapes keep their creation geometry.</summary>
         protected virtual void UpdateLiveGeometry() { }
 
+        /// <summary>The body this shape was created on (valid alongside <see cref="LiveShape"/>).</summary>
+        protected Body AttachedBody => _ownBody;
+
+        /// <summary>Rebuilds the live collision from deformed vertices in this GameObject's local
+        /// space — the deformable's Update Collision mode. Hull and mesh shapes support it; other
+        /// shapes return false and keep their creation geometry. The replacement is created first
+        /// so a failed rebuild leaves the old collision in place; userData and event opt-ins carry
+        /// over, and body mass is re-derived.</summary>
+        internal bool TryRebuildGeometry(Vector3[] vertices, int[] triangles)
+        {
+            if (!_shape.IsValid || !_ownBody.IsValid || vertices == null) return false;
+
+            IntPtr userData = _shape.UserData;
+            bool hitEvents = _shape.AreHitEventsEnabled();
+
+            Shape rebuilt = CreateRebuiltShape(vertices, triangles);
+            if (!rebuilt.IsValid) return false;
+
+            _shape.Destroy(updateBodyMass: true); // re-derives mass over remaining + rebuilt shapes
+            ReleaseRebuiltGeometry();
+            _shape = rebuilt;
+            if (userData != IntPtr.Zero) _shape.UserData = userData;
+            if (hitEvents) _shape.EnableHitEvents(true);
+            return true;
+        }
+
+        /// <summary>Shape-specific rebuild: create the replacement native shape from the deformed
+        /// vertices (and triangle topology, for mesh shapes), or default when unsupported. Runs
+        /// while the old shape still exists — geometry it references must stay alive until
+        /// <see cref="ReleaseRebuiltGeometry"/>.</summary>
+        internal virtual Shape CreateRebuiltShape(Vector3[] vertices, int[] triangles) => default;
+
+        /// <summary>Frees geometry the pre-rebuild shape referenced, once that shape is destroyed.</summary>
+        internal virtual void ReleaseRebuiltGeometry() { }
+
 #if UNITY_EDITOR
         /// <summary>Creates this shape on a body in a throwaway preview world (rope editor
         /// preview), leaving component state alone. The body must already sit at this shape's
@@ -194,6 +242,14 @@ namespace Box3D.Hybrid
         internal Shape CreateDetachedShape(Body body)
         {
             return CreateShape(body, float3.zero, quaternion.identity, transform.lossyScale);
+        }
+
+        /// <summary>Compound variant for preview bodies that own several shapes (editor physics
+        /// simulation): places the shape at a local frame within the body instead of assuming the
+        /// body sits at the shape's own transform.</summary>
+        internal Shape CreateDetachedShape(Body body, float3 localPosition, quaternion localRotation)
+        {
+            return CreateShape(body, localPosition, localRotation, transform.lossyScale);
         }
 
         /// <summary>Frees native geometry a detached preview shape allocated (mesh shapes).

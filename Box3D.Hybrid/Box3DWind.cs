@@ -6,8 +6,9 @@ namespace Box3D.Hybrid
 {
     /// <summary>A directional wind volume. Every physics step it pushes the dynamic bodies inside
     /// its box zone along the GameObject's forward (+Z) axis — rotate the object to aim the wind.
-    /// Strength can gust over time with Perlin noise. Select the object to see the zone and a grid
-    /// of arrows showing direction and (while playing) the live gust strength.</summary>
+    /// Strength can gust over time with Perlin noise. The zone also blows the scene's
+    /// <see cref="Box3DWater"/> surface (see Water Influence). Select the object to see the zone
+    /// and a grid of arrows showing direction and (while playing) the live gust strength.</summary>
     [Icon("Packages/com.suvitruf.box3d/Box3D.Hybrid.Editor/Icons/Box3DWind.png")]
     [AddComponentMenu("Box3D/Forces/Wind")]
     public class Box3DWind : MonoBehaviour
@@ -27,7 +28,12 @@ namespace Box3D.Hybrid
         [SerializeField, Tooltip("Wind volume in local units, centered on this object (follows the transform's rotation and scale). Make it large to cover the whole scene.")]
         private Vector3 ZoneSize = new Vector3(10f, 10f, 10f);
 
+        [SerializeField, Range(0f, 1f), Tooltip("How hard this wind grips the scene's Box3DWater: fluid at the surface (and foam) gets Strength × this as acceleration in m/s², fading to nothing below the surface. 0 = water ignores this wind.")]
+        private float WaterInfluence = 0.25f;
+
         private Box3DWorld _world;
+        private Box3DWater _water;
+        private bool _waterSearched;
         private float _currentStrength;
 
         // Broadphase results; a zone overlapping more shapes than this gets truncated for a step.
@@ -72,12 +78,31 @@ namespace Box3D.Hybrid
                 _bodies.Add(new Shape { Id = _overlap[i] }.GetBody());
             }
 
+            // The fluid isn't in the broadphase — hand the zone to the water solver directly,
+            // gusting with the same strength the bodies feel.
+            if (WaterInfluence > 0f)
+            {
+                if (!_water && !_waterSearched)
+                {
+                    _water = FindAnyObjectByType<Box3DWater>();
+                    _waterSearched = true;
+                }
+                if (_water)
+                {
+                    _water.AddWind(transform.position, transform.rotation, half,
+                        transform.forward * (_currentStrength * WaterInfluence));
+                }
+            }
+
             float3 force = (float3)transform.forward * _currentStrength;
+            // Hoisted: InverseTransformPoint re-derives the matrix per call, and this loop runs
+            // per body per step.
+            Matrix4x4 worldToLocal = transform.worldToLocalMatrix;
             foreach (Body body in _bodies)
             {
                 if (body.GetBodyType() != BodyType.Dynamic) continue;
 
-                Vector3 local = transform.InverseTransformPoint((Vector3)body.Position);
+                Vector3 local = worldToLocal.MultiplyPoint3x4((Vector3)body.Position);
                 if (Mathf.Abs(local.x) > ZoneSize.x * 0.5f ||
                     Mathf.Abs(local.y) > ZoneSize.y * 0.5f ||
                     Mathf.Abs(local.z) > ZoneSize.z * 0.5f) continue;

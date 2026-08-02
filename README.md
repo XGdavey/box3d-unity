@@ -25,8 +25,9 @@ This project was inspired by, and owes its architecture to, two projects:
 - **World & bodies** — static/kinematic/dynamic bodies, full body API (velocities, forces, mass,
   damping, per-axis motion locks, bullets/CCD, gravity scale).
 - **Shapes** — sphere, capsule, convex hull (with cylinder/cone/rock/point-cloud builders),
-  triangle mesh, height field, compound. Clear, documented geometry lifetime rules. Concave objects:
-  triangle meshes for static geometry, compounds of convex parts for dynamic bodies
+  triangle mesh, height field (buildable straight from a Unity Terrain, painted holes included),
+  compound. Clear, documented geometry lifetime rules. Concave objects: triangle meshes for static
+  geometry, compounds of convex parts for dynamic bodies
   ([details](Documentation~/shapes-and-geometry.md#concave-objects)).
 - **Joints** — all nine box3d joints: distance, motor, filter, parallel, prismatic, revolute,
   spherical (cone/twist limits), weld, wheel (suspension + steering + drive) — each with its full
@@ -35,6 +36,9 @@ This project was inspired by, and owes its architecture to, two projects:
   events, delivered as zero-copy spans (the compiler enforces the transient-memory rule).
 - **Queries** — closest-hit and all-hits ray casts, shape casts, AABB/shape overlaps, all
   allocation-free via caller-provided buffers.
+- **Dynamic tree** — box3d's broadphase AABB tree as a standalone spatial index for your own
+  (non-physics) data: a fast "what's near here?" over thousands of moving objects — AI perception,
+  interest management, trigger volumes, culling — without spinning up colliders.
 - **Character mover** — box3d's kinematic capsule toolkit (collide → solve planes → clip velocity)
   with a ready-made sample controller.
 - **Callbacks** — custom collision filtering, pre-solve contact veto, friction/restitution mixing
@@ -47,7 +51,14 @@ This project was inspired by, and owes its architecture to, two projects:
   across worker counts), save it, and scrub the replay frame by frame with divergence detection —
   either as wireframes or played back on your real scene objects. For lockstep/rollback netcode and
   bug repro. No other Unity physics wrapper ships this.
-- **Extras** — explosions, wind, conveyor surface materials.
+- **Water** — GPU particle water: a position-based fluid simulated in compute shaders that fills
+  pools, pours from waterfalls, flows around your Box3D shapes (terrain included) and carries
+  floating bodies back — rendered as a URP screen-space liquid surface with refraction, foam and
+  spray. Plus a cheap analytic buoyancy volume (Archimedes floating, waves, splash events) for
+  pool-style game water ([guide](Documentation~/water.md)).
+- **Extras** — explosions, wind (it grips the water surface too), impact-dent deformable meshes,
+  conveyor surface materials, and a Scene-view physics simulation tool for settling props in edit
+  mode.
 - **Multithreading** — box3d's internal scheduler, configurable worker count per world.
 - **Component layer (experimental)** — author bodies and shapes in the Inspector, mirroring
   Unity's Rigidbody/Collider model (see the docs).
@@ -142,7 +153,8 @@ world.Destroy();
 
 See `Documentation~/getting-started.md` for the full walkthrough, and install the **samples** from
 the Package Manager window: an interactive playground, basic simulation, joints, mouse drag,
-character controller, a drivable vehicle, and benchmark scenes comparing against PhysX — including a
+character controller, a drivable vehicle, two water scenes (a fillable buoyancy pool and a GPU
+particle water pool with a waterfall), and benchmark scenes comparing against PhysX — including a
 [16,290-box pyramid stress test](https://www.youtube.com/watch?v=BtdMbw97Zds) you can smash by
 throwing spheres.
 The sample scenes assume URP (they render fine elsewhere, minus materials), and the interactive
@@ -158,12 +170,30 @@ ones require the Input System package.
 - [Events](Documentation~/events.md)
 - [Queries](Documentation~/queries.md)
 - [Character mover](Documentation~/character-mover.md)
+- [Water](Documentation~/water.md) — GPU particle water with a screen-space surface and floating bodies
 - [Callbacks & threading](Documentation~/callbacks-and-threading.md)
 - [Debug draw](Documentation~/debug-draw.md)
 - [Determinism & replay](Documentation~/determinism-and-replay.md) — record, validate, and scrub replays
 - [Determinism testing](Documentation~/determinism-testing.md) — state hashing for lockstep/cross-platform checks
 - [Performance](Documentation~/performance.md)
+- [Double precision (large worlds)](Documentation~/double-precision.md) — opt-in `BOX3D_DOUBLE` mode
 - [Building the native libraries](Documentation~/building-natives.md)
+
+## Support & community
+
+**Join on [Discord](https://discord.gg/3aDtVmNRMY)** — chat about the project, follow progress, ask
+questions, share ideas, or help test. Everyone curious about Box3D or physics in Unity is welcome.
+
+**Support development** — this is a free, open-source labour of love built in spare time. If you'd
+like to help it move along faster, you can support me on
+[Patreon](https://www.patreon.com/apanasik). Entirely optional — it funds the time spent on the
+bindings and tooling; the package stays free and MIT either way.
+
+## Contributors
+
+- [timskap](https://github.com/timskap) — Editor and tooling: the GameObject creation menu,
+  component icons, inspectors and the rope editor workflow. Mostly focused on making the package
+  more convenient to use in the editor.
 
 ## License
 
