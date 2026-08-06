@@ -33,6 +33,9 @@ namespace Box3D.Hybrid
         [SerializeField, Min(0f), Tooltip("Angular velocity damping.")]
         private float AngularDamping = 0.05f;
 
+        [SerializeField, Tooltip("Bone-driven Dynamic body: skip position updates from physics, only sync rotation.")]
+        public bool SkipPositionSync;
+
         [SerializeField, Tooltip("Start awake, or asleep until disturbed.")]
         private bool StartAwake = true;
 
@@ -218,7 +221,10 @@ namespace Box3D.Hybrid
         /// <summary>Called by the world after each step to write a body-move event to the Transform.</summary>
         internal void ApplyMoveEvent(B3WorldTransform moved)
         {
-            transform.SetPositionAndRotation(moved.Position, moved.Rotation);
+            if (SkipPositionSync)
+                transform.rotation = moved.Rotation;
+            else
+                transform.SetPositionAndRotation(moved.Position, moved.Rotation);
         }
 
         private void Warp(Vector3 position, Quaternion rotation)
