@@ -291,7 +291,7 @@ namespace Box3D.Hybrid
             for (int i = 0; i < count; i++)
             {
                 var other = Box3DWorld.Instance.GetShapeComponent(visitors[i]);
-                if (!other || other == this) continue;
+                if (!other || other == this || !other.enabled) continue;
                 onOverlap(other);
             }
         }
