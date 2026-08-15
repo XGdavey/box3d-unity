@@ -39,6 +39,8 @@ namespace Box3D.Hybrid
         private Body _ownBody;
         private GCHandle _selfHandle;
 
+        private static readonly ShapeId[] s_overlapIds = new ShapeId[64];
+
         public ShapeId ShapeId => _shape.Id;
         public Shape Shape => _shape;
         public bool IsSensorShape => IsSensor;
@@ -275,6 +277,28 @@ namespace Box3D.Hybrid
             var localResult = ClosestPointLocal(localPt);
             var worldResult = bodyPos + math.mul(bodyRot, (float3)localResult);
             return worldResult;
+        }
+
+        public void ForEachOverlap(Action<Box3DShape> onOverlap)
+        {
+            if (!this || onOverlap == null) return;
+
+            int capacity = _shape.GetSensorCapacity();
+            if (capacity == 0) return;
+
+            var visitors = capacity <= s_overlapIds.Length ? s_overlapIds : new ShapeId[capacity];
+            int count = _shape.GetSensorData(visitors);
+            for (int i = 0; i < count; i++)
+            {
+                var other = Box3DWorld.Instance.GetShapeComponent(visitors[i]);
+                if (!other || other == this) continue;
+                onOverlap(other);
+            }
+        }
+
+        public void RebuildAndDetect(Action<Box3DShape> onOverlap)
+        {
+            ForEachOverlap(onOverlap);
         }
 
         protected virtual Vector3 ClosestPointLocal(float3 localPoint)

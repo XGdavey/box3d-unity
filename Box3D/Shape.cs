@@ -83,6 +83,18 @@ namespace Box3D
             return result;
         }
 
+        /// <summary>Snapshots the visitor shapes currently touching this sensor, as of the last
+        /// <c>World.Step</c>. Fills <paramref name="visitorIds"/> and returns the count. Size the
+        /// buffer via <see cref="Shape.GetSensorCapacity"/>. Requires this shape to be a sensor
+        /// (<c>IsSensor == true</c>).</summary>
+        public unsafe int GetSensorData(Span<ShapeId> visitorIds)
+        {
+            fixed (ShapeId* p = visitorIds)
+            {
+                return UnsafeBindings.b3Shape_GetSensorData(Id, p, visitorIds.Length);
+            }
+        }
+
         public bool Equals(Shape other)
         {
             return Id.Equals(other.Id);
