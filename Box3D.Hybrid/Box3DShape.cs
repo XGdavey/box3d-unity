@@ -270,13 +270,8 @@ namespace Box3D.Hybrid
 
         public Vector3 GetClosestPoint(Vector3 point)
         {
-            var body = _shape.GetBody();
-            var bodyPos = body.Position;
-            var bodyRot = body.Rotation;
-            var localPt = math.mul(math.inverse(bodyRot), (float3)point - bodyPos);
-            var localResult = ClosestPointLocal(localPt);
-            var worldResult = bodyPos + math.mul(bodyRot, (float3)localResult);
-            return worldResult;
+            if (!_shape.IsValid) return transform.position;
+            return (Vector3)_shape.GetClosestPoint((float3)point);
         }
 
         public void ForEachOverlap(Action<Box3DShape> onOverlap)
